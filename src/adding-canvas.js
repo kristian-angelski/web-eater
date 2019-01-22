@@ -1,14 +1,17 @@
 var snake = [];
 
+/**
+ * Creates a div element that is appended to <body> 
+ * This div acts as a layer on top of the <body>
+ */
 function createDiv() {
     let div = document.createElement('div');
     div.style.width = '100%';
     div.style.height = '100%';
-    div.style.background = 'rgba(255, 255, 255, .4)';
+    div.style.background = 'rgba(255, 255, 255, .3)'; //set opacity 
     div.style.color = 'white';
     div.style.position = 'fixed';
     div.style.top = '0';
-    //div.style.opacity = '0.2';
     div.setAttribute('id', 'Div1');
     div.style.zIndex = '10000000000000';
     document.body.id = 'body';
@@ -18,13 +21,18 @@ function createDiv() {
     snake.push(div);
     snakeDot();
 }
-
 createDiv();
+
+/**
+ * Creates the Snake and appends it to <body>
+ */
 function snakeDot() {
     let snake = document.createElement('div');
     snake.setAttribute('id', 'snake');
     snake.style.border = '1px solid black';
     snake.style.borderRadius = '100px';
+    snake.style.left = '0px'; //start position
+    snake.style.top = '0px';
     snake.style.width = '30px';
     snake.style.height = '30px'
     snake.style.background = 'black';
@@ -58,36 +66,61 @@ const directions = {
     }, //bottom
 }
 let direction = directions['39'];
-key.style.left = '0px';
-key.style.top = '0px';
 
 
-document.addEventListener('keydown', changeDirection);
+// EVENT LISTENERS
+document.addEventListener('keydown', changeDirection);                  
+document.addEventListener('keyup', decreaseSpeed);
+
 
 function changeDirection(event) {
     if (Object.keys(directions).indexOf(String(event.keyCode)) != -1) {
+        speed = 5;
         direction = directions[event.keyCode];
     }
 }
 
-function moveSnake() {
+function decreaseSpeed() {
+    if (Object.keys(directions).indexOf(String(event.keyCode)) != -1) {
+        speed = 2;
+    }
+}
 
-    key.scrollIntoView({block: "center"});
 
-    if (parseInt(key.style.left) < 0) {
-        key.style.left = (w - parseInt(key.style.width)) + 'px';
+
+/**
+ * The window.requestAnimationFrame() method tells the browser that you wish to perform an animation and requests that the browser call a specified function to update an animation before the next repaint.
+ * 
+ * @param {Number} timestamp - argument of requestAnimationFrame that is automatically passed when the method is called. Similar to performance.now()
+ */
+function moveSnake(timestamp) {
+
+    snake.scrollIntoView({block: "center"}); //scroll view around the snake
+
+    //define values so we don't have to compute them multiple times.
+    //also makes code a bit easier to read.
+    let left = parseInt(snake.style.left);
+    let top = parseInt(snake.style.top);
+    let elemWidth = parseInt(snake.style.width);
+    let elemHeight = parseInt(snake.style.height);
+
+    
+    if (left < 0) {                                             //exits left side
+        snake.style.left = (bodyWidth - elemWidth) + 'px';
     }
-    else if (parseInt(key.style.top) < 0) {
-        key.style.top = (h - parseInt(key.style.width)) + 'px';
+    else if (top < 0) {                                         // exits top side
+        snake.style.top = (bodyHeight - elemHeight) + 'px';
     }
-    else if (parseInt(key.style.left) + parseInt(key.style.width) > w) {
-        key.style.left = 0;
+    else if (left + elemWidth > bodyWidth) {                    // exits right side
+        snake.style.left = 0;
     }
-    else if (parseInt(key.style.top) + parseInt(key.style.height) > h) {
-        key.style.top = 0;
+    else if (top + elemHeight > bodyHeight) {                   //exits bottom side
+        snake.style.top = 0;
     }
-    key.style[direction.item] = (parseInt(key.style[direction.item]) + direction.sign * speed) + 'px';
-    window.requestAnimationFrame(moveSnake);
+
+
+    snake.style[direction.item] = (parseInt(snake.style[direction.item]) + direction.sign * speed) + 'px';      //set the new position
+    window.requestAnimationFrame(moveSnake);                                                                    //call the fn again
 }
 moveSnake();
 
