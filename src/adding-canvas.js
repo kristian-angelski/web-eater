@@ -1,3 +1,5 @@
+var snake = [];
+
 function createDiv() {
     let div = document.createElement('div');
     div.style.width = '100%';
@@ -11,6 +13,9 @@ function createDiv() {
     div.style.zIndex = '10000000000000';
     document.body.id = 'body';
     document.getElementById('body').appendChild(div);
+    snake.push(div);
+    snake.push(div);
+    snake.push(div);
     snakeDot();
 }
 
@@ -21,12 +26,13 @@ function snakeDot() {
     snake.style.border = '1px solid black';
     snake.style.borderRadius = '100px';
     snake.style.width = '30px';
-    snake.style.height = '30px';
+    snake.style.height = '30px'
     snake.style.background = 'black';
     snake.style.position = 'absolute';
     snake.style.zIndex = '10000000000000';
     document.getElementById('body').appendChild(snake);
 }
+
 
 let key = document.getElementById('snake');
 const speed = 2;
@@ -84,3 +90,37 @@ function moveSnake() {
     window.requestAnimationFrame(moveSnake);
 }
 moveSnake();
+
+
+function candy () {
+
+    var randomHeight = Math.random() * (h - 1) + 1;
+    var randomWidth = Math.random () * (w - 1) + 1;
+
+    var candy = document.createElement('div');
+    candy.id = 'candy';
+    candy.style.border = '1px solid black';
+    candy.style.borderRadius = '100px';
+    candy.style.width = '30px';
+    candy.style.height = '30px'
+    candy.style.background = 'green';
+    candy.style.position = 'absolute';
+    candy.style.zIndex = '10000000000000';
+    key.style.left = (parseInt(randomWidth)) + 'px';
+    key.style.top = (parseInt(randomHeight)) + 'px';
+    document.getElementById('body').appendChild(candy);
+    snake.push(candy);
+    console.log(snake);
+    console.log(snake.length);
+}
+
+
+candy();
+
+function snakeTail () {
+    snake.forEach(element => {
+        document.getElementById('body').appendChild(element);
+    });
+}
+
+snakeTail();
