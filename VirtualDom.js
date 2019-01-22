@@ -98,14 +98,14 @@ class Dom {
 
 }
 
-Dom.prototype.utilities = {
+Dom.utilities = {
 
 
     /**
      * Get the absolute page coordiantes of an element.
      * @param {HTMLElement} elem 
      */
-    getPageCoordinates(elem) {
+    getAbsolutePageCoordinates(elem) {
         let box = elem.getBoundingClientRect();
     
         return {
@@ -117,10 +117,16 @@ Dom.prototype.utilities = {
     },
 
     getDistanceBetween2Points: function(x1, y1, x2, y2) {
-        return Math.sqrt( Math.pow(x2-x1, 2) + Math.pow(y2-y1, 2) );
+        let a = x2-x1;
+        let b = y2-y1;
+
+        return Math.sqrt( a*a + b*b );
     },
 
     getCenterOfRect: function(rect) {
-        return //TODO ;
+        return  {
+                    x: (rect.offsetWidth - rect.style.left)/2,
+                    y: (rect.offsetHeight - rect.style.top)/2 
+                };
     }
 }
