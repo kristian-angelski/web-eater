@@ -4,7 +4,7 @@ function createDiv () {
     div.style.height = '100%';
     div.style.background = 'rgba(255, 255, 255, .4)';
     div.style.color = 'white';
-     div.style.position = 'relative';
+     div.style.position = 'absolute';
     div.style.top = '0';
     //div.style.opacity = '0.2';
     div.setAttribute('id','Div1');
@@ -16,7 +16,6 @@ function createDiv () {
 }
 
 createDiv();
-
 
 function snakeDot () {
     let snake = document.createElement('div');
@@ -30,9 +29,7 @@ function snakeDot () {
     document.getElementById('Div1').appendChild(snake);
 }
 
-
     let key = document.getElementById('snake');
-    console.log(key);
     const speed = 2;
     let w = document.body.offsetWidth;
     let h = document.body.offsetHeight;
