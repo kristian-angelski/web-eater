@@ -34,12 +34,13 @@ function snakeDot() {
     snake.style.left = '0px'; //start position
     snake.style.top = '0px';
     snake.style.width = '30px';
-    snake.style.height = '30px';
+    snake.style.height = '30px'
     snake.style.background = 'black';
     snake.style.position = 'absolute';
     snake.style.zIndex = '10000000000000';
     document.getElementById('body').appendChild(snake);
 }
+
 
 //  GLOBAL VARIABLES
 let snakeHead = document.getElementById('snake');
@@ -146,8 +147,10 @@ function candy () {
     candy.style.background = 'green';
     candy.style.position = 'absolute';
     candy.style.zIndex = '10000000000000';
+
     snakeHead.style.left = (parseInt(randomWidth)) + 'px';
     snakeHead.style.top = (parseInt(randomHeight)) + 'px';
+
     document.getElementById('body').appendChild(candy);
     snake.push(candy);
     console.log(snake);
