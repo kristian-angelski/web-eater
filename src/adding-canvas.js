@@ -134,8 +134,8 @@ moveSnake();
 
 function candy () {
 
-    var randomHeight = Math.random() * (h - 1) + 1;
-    var randomWidth = Math.random () * (w - 1) + 1;
+    var randomHeight = Math.random() * (bodyHeight - 1) + 1;
+    var randomWidth = Math.random () * (bodyWidth - 1) + 1;
 
     var candy = document.createElement('div');
     candy.id = 'candy';
