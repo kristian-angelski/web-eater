@@ -37,7 +37,7 @@ function snakeDot() {
 }
 
 //  GLOBAL VARIABLES
-let snake = document.getElementById('snake');
+let snakeHead = document.getElementById('snake');
 let speed = 2; //default speed of movement
 let bodyWidth = document.body.offsetWidth;
 let bodyHeight = document.body.scrollHeight;
@@ -90,31 +90,38 @@ function decreaseSpeed() {
  */
 function moveSnake(timestamp) {
 
-    snake.scrollIntoView({block: "center"}); //scroll view around the snake
+    snakeHead.scrollIntoView({block: "center"}); //scroll view around the snake
 
     //define values so we don't have to compute them multiple times.
     //also makes code a bit easier to read.
-    let left = parseInt(snake.style.left);
-    let top = parseInt(snake.style.top);
-    let elemWidth = parseInt(snake.style.width);
-    let elemHeight = parseInt(snake.style.height);
+    let left = parseInt(snakeHead.style.left);
+    let top = parseInt(snakeHead.style.top);
+    let elemWidth = parseInt(snakeHead.style.width);
+    let elemHeight = parseInt(snakeHead.style.height);
+
+    /* let viewportCoords = snakeHead.getBoundingClientRect();
+
+    var elements = document.elementsFromPoint(viewportCoords.left+16, viewportCoords.top+16);
+
+    if(timestamp %100 < 20)
+        console.log(elements); */
 
     
     if (left < 0) {                                             //exits left side
-        snake.style.left = (bodyWidth - elemWidth) + 'px';
+        snakeHead.style.left = (bodyWidth - elemWidth) + 'px';
     }
     else if (top < 0) {                                         // exits top side
-        snake.style.top = (bodyHeight - elemHeight) + 'px';
+        snakeHead.style.top = (bodyHeight - elemHeight) + 'px';
     }
     else if (left + elemWidth > bodyWidth) {                    // exits right side
-        snake.style.left = 0;
+        snakeHead.style.left = 0;
     }
     else if (top + elemHeight > bodyHeight) {                   //exits bottom side
-        snake.style.top = 0;
+        snakeHead.style.top = 0;
     }
 
 
-    snake.style[direction.item] = (parseInt(snake.style[direction.item]) + direction.sign * speed) + 'px';      //set the new position
+    snakeHead.style[direction.item] = (parseInt(snakeHead.style[direction.item]) + direction.sign * speed) + 'px';      //set the new position
     window.requestAnimationFrame(moveSnake);                                                                    //call the fn again
 }
 moveSnake();

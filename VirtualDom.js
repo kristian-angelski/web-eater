@@ -79,6 +79,7 @@ class Dom {
     }
 
     /**
+     * Returns and removes the array containing the elements with the highest count
      * @returns {Array<HTMLElement>} E.g. returns all div elements if div is the highest encountered element tag
      */
     getElementsWithHighestCount() {
