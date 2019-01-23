@@ -1,29 +1,34 @@
 // global variables
 let level = 1;
 let currentPoints = 0;
+
+/**
+ * Levels - containing different points required for a level up
+ * and each level's different foods
+ */
 let levels = {
 	1: {
-		food: currentFoodLevel(level),
+		food: ['a', 'b'],
 		pointsToLevel: 200,
 	},
 	2: {
-		food: currentFoodLevel(level),
+		food: ['c', 'd'],
 		pointsToLevel: 600,
 	},
 	3: {
-		food: currentFoodLevel(level),
+		food: ['e', 'f'],
 		pointsToLevel: 1000
 	},
 	4: {
-		food: currentFoodLevel(level),
+		food: ['g', 'h'],
 		pointsToLevel: 1600
 	},
 	5: {
-		food: currentFoodLevel(level),
+		food: ['i', 'j'],
 		pointsToLevel: 2000
 	},
 	6: {
-		food: currentFoodLevel(level),
+		food: ['k', 'l'],
 		pointsToLevel: 2600
 	}
 }
@@ -43,37 +48,6 @@ function init() {
 	window.bodyHeight = document.body.scrollHeight;
 
 	moveSnake();
-}
-
-/**
- * Function that determines the different food types, based on level progress
- * 
- * @param {Number} level 
- *  */ 
-function currentFoodLevel(level) {
-	// initializing food array which will contain different elements per level	
-	let food = [];	
-
-	switch(level) {
-		case 1:
-			food = ['a', 'b'];
-			break;
-		case 2:
-			food = ['c', 'd'];
-			break;
-		case 3:
-			food = ['e', 'f'];
-			break;
-		case 4:
-			food = ['g', 'h'];
-			break;
-		default:
-			// think of default behavior
-			console.log('no such level');
-			return;
-	}
-
-	return food;
 }
 
 /**
