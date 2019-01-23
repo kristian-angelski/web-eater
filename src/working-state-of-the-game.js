@@ -26,7 +26,7 @@ function snakeDot() {
     snake.style.width = '30px';
     snake.style.height = '30px'
     snake.style.background = 'black';
-    candy.style.display = 'inline-block';
+    snake.style.display = 'inline-block';
     snake.style.position = 'absolute';
     snake.style.zIndex = '10000000000000';
     document.getElementById('body').appendChild(snake);
