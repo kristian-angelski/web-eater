@@ -8,6 +8,10 @@ class Dom {
         //and sets a property onto Dom for each type of tagName on the page
         this._getPageElements(document.body, 0)._sortByNumElements();
 
+        //disable pointer clicks 
+        // needed for elementsFromPoint()
+        document.querySelector('html').style.pointerEvents = 'none';
+
         return this;
     }
 
@@ -21,6 +25,7 @@ class Dom {
 
         this._sortByDepth(element,depth);
         let elementTag = element.tagName.toLowerCase();
+        element.style.pointerEvents = 'none';   //set every elements pointer events to none
     
         if(this[elementTag])         //if this property exists
             this[elementTag].push(element); //push element into it
@@ -79,6 +84,7 @@ class Dom {
     }
 
     /**
+     * Returns and removes the array containing the elements with the highest count
      * @returns {Array<HTMLElement>} E.g. returns all div elements if div is the highest encountered element tag
      */
     getElementsWithHighestCount() {
@@ -94,6 +100,14 @@ class Dom {
 
     smoothScrollTo(element) {
         element.scrollIntoView({behavior: "smooth"});
+    }
+
+    setPointerEvents(HTMLArray){
+        HTMLArray.forEach( function(element) {
+            element.style.pointerEvents = 'auto';
+        })
+
+        return this;
     }
 
 }
