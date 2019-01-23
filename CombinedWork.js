@@ -5,7 +5,7 @@ function init() {
 
 
     createDiv();
-    
+
     //  GLOBAL VARIABLES
     window.snakeHead = document.getElementById('snake');
     window.speed = 2; //default speed of movement
@@ -30,10 +30,11 @@ class Dom {
 
         //fills the arrays elementsSortedByDepth and elementsSortedByNum
         //and sets a property onto Dom for each type of tagName on the page
-        this._getPageElements(document.body, 0)._sortByNumElements();
+        this._getPageElements(document.body, 0);
+        this._sortByNumElements();
 
         //disable pointer clicks 
-        // needed for elementsFromPoint()
+        // needed for elementsFromPoint() so that only returns elements that don't have pointerEvents = none
         document.querySelector('html').style.pointerEvents = 'none';
 
         return this;
@@ -68,6 +69,8 @@ class Dom {
     /**
      * Internal method
      * 
+     * Fills up elementsSortedByDepth
+     * 
      * @param {HTMLObjectElement} element 
      * @param {Number} depth 
      */
@@ -85,7 +88,7 @@ class Dom {
     /**
      * Internal method
      * 
-     * 
+     * Fills up elementsSortedByNum
      */
     _sortByNumElements() {
     
