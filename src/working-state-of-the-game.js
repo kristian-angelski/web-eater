@@ -18,21 +18,6 @@ function createDiv() {
 
 createDiv();
 
-function snakeDot() {
-    let snakeBody = document.createElement('div');
-    snakeBody.setAttribute('id', 'snake');
-    snakeBody.style.border = '1px solid black';
-    snakeBody.style.borderRadius = '100px';
-    snakeBody.style.width = '30px';
-    snakeBody.style.height = '30px'
-    snakeBody.style.background = 'black';
-    snakeBody.style.position = 'absolute';
-    snakeBody.style.zIndex = '10000000000000';
-    document.body.id = 'body';
-    document.getElementById('body').appendChild(snakeBody);
-}
-
-let key = document.getElementById('snake');
 const speed = 2;
 let w = document.body.offsetWidth;
 let h = document.body.scrollHeight;
@@ -55,9 +40,8 @@ const directions = {
         sign: -1
     }, //bottom
 }
-let direction = directions['right'];
-key.style.left = '0px';
-key.style.top = '0px';
+let direction = 'right';
+
 const keycodesToDirection = {
     39: 'right',
     37: 'left',
@@ -75,76 +59,83 @@ function changeDirection(event) {
 }
 
 function moveSnake() {
-    let a = getCurrentTailLocation();
-    let tail = document.getElementsByClassName('snake');
-    for (let i = 0; i < tail.length; i++) {
-        // if (tail[i] === 0) {
-        //     tail[i].style.left = a.left -30 + 'px';
-        //     tail[i].style.top = a.top -30 + 'px'
-        // }
-        // else {
-        //     tail[i].style.left = tail[i-1].left - 30;
-        //     tail[i].style.top = tail[i-1].top - 30;
-        // }
 
+    for (let i = 0; i < snake.length; i++) {
+        var snakeCurrentDot = document.getElementById(snake[i].id);
+
+        if (parseInt(snakeCurrentDot.style.left) < 0) {
+            snake[i].x = w - snakeDotSize;
+        } else if (parseInt(snakeCurrentDot.style.top) < 0) {
+            snake[i].y = h - snakeDotSize;
+        } else if (parseInt(snakeCurrentDot.style.left) + parseInt(snakeCurrentDot.style.width) > w) {
+            snake[i].x = 0
+        } else if (parseInt(snakeCurrentDot.style.top) + parseInt(snakeCurrentDot.style.height) > h) {
+            snake[i].y = 0;
+        }
+
+        var directionData = directions[direction];
+
+       
+
+        if (directionData.item === 'left') {
+            snake[i].x += directionData.sign * speed;
+        } else {
+            snake[i].y += directionData.sign * speed;
+        }
+
+        snakeCurrentDot.style.left = snake[i].x + 'px';
+        snakeCurrentDot.style.top = snake[i].y + 'px';
     }
-
-
-    key.scrollIntoView({
+    document.getElementById(snake[0].id).scrollIntoView({
         block: "center"
     });
-
-    if (parseInt(key.style.left) < 0) {
-        key.style.left = (w - parseInt(key.style.width)) + 'px';
-    } else if (parseInt(key.style.top) < 0) {
-        key.style.top = (h - parseInt(key.style.width)) + 'px';
-    } else if (parseInt(key.style.left) + parseInt(key.style.width) > w) {
-        key.style.left = 0;
-    } else if (parseInt(key.style.top) + parseInt(key.style.height) > h) {
-        key.style.top = 0;
-    }
-    var directioData = directions[direction];
-    key.style[directioData.item] = (parseInt(key.style[directioData.item]) + directioData.sign * speed) + 'px';
     window.requestAnimationFrame(moveSnake);
 
 }
+makeSnakeItem();
 moveSnake();
-
 
 function makeSnakeItem() {
     var x = 0;
     var y = 0;
     if (snake.length > 0) {
         var previousItem = snake[snake.length - 1];
-        x = previousItem.left;
-        y = previousItem.top;
+        x = previousItem.x;
+        y = previousItem.y;
+        debugger;
         switch (direction) {
             case 'left':
             case 'right':
-                x += directions[direction].sign * snakeDotSize;
+                x += (directions[direction].sign * -1) * snakeDotSize;
                 break;
             case 'top':
             case 'down':
-                y += directions[direction].sign * snakeDotSize;
+                y += (directions[direction].sign * -1) * snakeDotSize;
                 break;
         }
-        
-    } 
 
+    }
+
+    var newDot = {
+        x,
+        y,
+        direction,
+        id: 'snake' + snake.length
+    }
+    makeDot(newDot);
+    snake.push(newDot);
+}
+
+function makeDot(newDot) {
     var snakeItem = document.createElement('div');
-    snakeItem.setAttribute('class', 'snake');
+    snakeItem.setAttribute('id', newDot.id);
     snakeItem.style.borderRadius = '100px';
     snakeItem.style.width = snakeDotSize + 'px';
     snakeItem.style.height = snakeDotSize + 'px';
     snakeItem.style.background = (snake.length === 0) ? 'black' : 'yellow';
     snakeItem.style.position = 'absolute';
     snakeItem.style.zIndex = '10000000000000';
-    snakeItem.style.top = y;
-    snakeItem.style.left = x;
-    snake.push(snakeItem);
-
-}
-
-function getCurrentTailLocation() {
-    return document.getElementById('snake').getBoundingClientRect();
+    snakeItem.style.top = newDot.y + 'px';
+    snakeItem.style.left = newDot.x + 'px';
+    document.body.appendChild(snakeItem);
 }
