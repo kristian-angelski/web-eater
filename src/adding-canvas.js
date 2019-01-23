@@ -107,12 +107,11 @@ function moveSnake(timestamp) {
     let elemWidth = parseInt(snakeHead.style.width);
     let elemHeight = parseInt(snakeHead.style.height);
 
-    /* let viewportCoords = snakeHead.getBoundingClientRect();
-
+    let viewportCoords = snakeHead.getBoundingClientRect();
     var elements = document.elementsFromPoint(viewportCoords.left+16, viewportCoords.top+16);
 
     if(timestamp %100 < 20)
-        console.log(elements); */
+        console.log(elements);
 
 
     if (left < 0) {                                             //exits left side
