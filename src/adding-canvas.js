@@ -1,3 +1,5 @@
+var snake = [];
+
 /**
  * Creates a div element that is appended to <body> 
  * This div acts as a layer on top of the <body>
@@ -14,6 +16,9 @@ function createDiv() {
     div.style.zIndex = '10000000000000';
     document.body.id = 'body';
     document.getElementById('body').appendChild(div);
+    snake.push(div);
+    snake.push(div);
+    snake.push(div);
     snakeDot();
 }
 createDiv();
@@ -125,3 +130,37 @@ function moveSnake(timestamp) {
     window.requestAnimationFrame(moveSnake);                                                                    //call the fn again
 }
 moveSnake();
+
+
+function candy () {
+
+    var randomHeight = Math.random() * (h - 1) + 1;
+    var randomWidth = Math.random () * (w - 1) + 1;
+
+    var candy = document.createElement('div');
+    candy.id = 'candy';
+    candy.style.border = '1px solid black';
+    candy.style.borderRadius = '100px';
+    candy.style.width = '30px';
+    candy.style.height = '30px'
+    candy.style.background = 'green';
+    candy.style.position = 'absolute';
+    candy.style.zIndex = '10000000000000';
+    snakeHead.style.left = (parseInt(randomWidth)) + 'px';
+    snakeHead.style.top = (parseInt(randomHeight)) + 'px';
+    document.getElementById('body').appendChild(candy);
+    snake.push(candy);
+    console.log(snake);
+    console.log(snake.length);
+}
+
+
+candy();
+
+function snakeTail () {
+    snake.forEach(element => {
+        document.getElementById('body').appendChild(element);
+    });
+}
+
+snakeTail();
