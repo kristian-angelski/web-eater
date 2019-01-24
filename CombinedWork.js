@@ -333,6 +333,21 @@
 		};
 	}
 
+	/**
+	 * Function that will add points, based on eating different elements
+	 * @param {Number} points
+	 */
+	function addPoints(points) {
+		currentPoints += points;
+		if (currentPoints >= levels[level].pointsToLevel) {
+			alert(`gz, you are level ${level + 1} now!`);
+			level++;
+			return;
+		} else {
+			console.log(`You need ${levels[level].pointsToLevel - currentPoints} more points to level up.`);
+		}
+	}
+
 
 
 	// Game Heading and Gameplay Instructions
