@@ -70,12 +70,14 @@ let direction = directions['39'];
 
 
 // EVENT LISTENERS
-document.addEventListener('keydown', changeDirection);                  
+document.addEventListener('keydown', changeDirection);
 document.addEventListener('keyup', decreaseSpeed);
 
 
 function changeDirection(event) {
-    if (Object.keys(directions).indexOf(String(event.keyCode)) != -1) {
+    if (((direction.item === directions[event.keyCode].item &&
+        direction.sign === directions[event.keyCode].sign) ||
+        direction.item !== directions[event.keyCode].item)) {
         speed = 5;
         direction = directions[event.keyCode];
     }
@@ -96,7 +98,7 @@ function decreaseSpeed() {
  */
 function moveSnake(timestamp) {
 
-    snakeHead.scrollIntoView({block: "center"}); //scroll view around the snake
+    snakeHead.scrollIntoView({ block: "center" }); //scroll view around the snake
 
     //define values so we don't have to compute them multiple times.
     //also makes code a bit easier to read.
@@ -111,7 +113,7 @@ function moveSnake(timestamp) {
     if(timestamp %100 < 20)
         console.log(elements);
 
-    
+
     if (left < 0) {                                             //exits left side
         snakeHead.style.left = (bodyWidth - elemWidth) + 'px';
     }
@@ -132,10 +134,10 @@ function moveSnake(timestamp) {
 moveSnake();
 
 
-function candy () {
+function candy() {
 
-    var randomHeight = Math.random() * (bodyHeight - 1) + 1;
-    var randomWidth = Math.random () * (bodyWidth - 1) + 1;
+    var randomHeight = Math.random() * (h - 1) + 1;
+    var randomWidth = Math.random() * (w - 1) + 1;
 
     var candy = document.createElement('div');
     candy.id = 'candy';
@@ -159,7 +161,7 @@ function candy () {
 
 candy();
 
-function snakeTail () {
+function snakeTail() {
     snake.forEach(element => {
         document.getElementById('body').appendChild(element);
     });
