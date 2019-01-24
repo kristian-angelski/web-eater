@@ -7,7 +7,6 @@
     let htmlPage = document.querySelector('html');
     let bodyWidth = htmlPage.scrollWidth;
     let bodyHeight = htmlPage.scrollHeight;
-
     const directions = {
         39: {
             item: 'left',
@@ -66,11 +65,10 @@
          */
         _getPageElements(element, depth) { //called for every element
 
-            let elementCoords = element.getBoundingClientRect(); //element position
             element.style.pointerEvents = 'none';   //set every elements pointer events to none
             this._sortByDepth(element, depth);
 
-            if (elementCoords.height > 0 || elementCoords.width > 0) { //check if element has width or height
+            if (element.clientHeight > 0 && element.clientWidth > 0) { //check if element has width or height
 
                 let elementTag = element.tagName.toLowerCase(); //element tagName
 
@@ -139,7 +137,9 @@
                         x: coords.left,
                         y: coords.top,
                         rightX: coords.width + coords.left,
-                        bottomY: coords.height + coords.top
+                        bottomY: coords.height + coords.top,
+                        width: coords.width,
+                        height: coords.height
                     });
             })
         }
@@ -282,14 +282,6 @@
 
         snakeHead.rightAbs = function () { return snakeHead.absLeft + snakeHead.offsetWidth; };
         snakeHead.bottomAbs = function () { return snakeHead.absTop + snakeHead.offsetHeight; };
-
-        snakeHead.getCenterPointX = function () {
-            return snakeHead.leftAbs + snakeHead.offsetWidth / 2;
-        }
-
-        snakeHead.getCenterPointY = function () {
-            return snakeHead.topAbs + snakeHead.offsetHeight / 2;
-        }
     }
 
 
@@ -362,26 +354,30 @@
 
 
     function checkCollision() {
-        let centerX = snakeHead.getCenterPointX();
-        let centerY = snakeHead.getCenterPointY();
 
         for (let i = 0; i < virtualDom.currentLevelElements.length; i++) {
 
             let elem = virtualDom.currentLevelElements[i];
-            if (centerX > elem.x && centerY > elem.y && centerX < elem.rightX && centerY < elem.bottomY) { //element eaten nom nom
-                //TODO: set opacity to 0
+
+            if (elem.x < snakeHead.leftAbs + snakeHead.clientWidth &&
+                elem.x + elem.width > snakeHead.leftAbs &&
+                elem.y < snakeHead.topAbs + snakeHead.clientHeight &&
+                elem.height + elem.y > snakeHead.topAbs) {
+
+                elem.element.style.opacity = 0;                                                                                         //opacity 0
+
                 virtualDom.currentLevelElements[i] = virtualDom.currentLevelElements[virtualDom.currentLevelElements.length - 1];
                 virtualDom.currentLevelElements.pop();
             }
+             
+           /*  if (centerX > elem.x && centerY > elem.y && centerX < elem.rightX && centerY < elem.bottomY) { //element eaten nom nom
+                
+                elem.element.style.opacity = 0;                                                                                         //opacity 0
+                
+                virtualDom.currentLevelElements[i] = virtualDom.currentLevelElements[virtualDom.currentLevelElements.length - 1];
+                virtualDom.currentLevelElements.pop();
+            } */
         }
-
-        //inefficient
-        /* virtualDom.currentLevelElements.forEach( function (elem) {
-            if(centerX > elem.x && centerY > elem.y && centerX < elem.rightX && centerY < elem.bottomY){    
-                //Element eaten
-    
-            }
-        }) */
     }
     init();
 })();
