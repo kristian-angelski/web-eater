@@ -3,14 +3,13 @@ class Dom {
     constructor() {
         this.elementsSortedByDepth = [];
         this.elementsSortedByNum = [];
+        this.currentLevelElements = [];
 
         //fills the arrays elementsSortedByDepth and elementsSortedByNum
         //and sets a property onto Dom for each type of tagName on the page
-        this._getPageElements(document.body, 0)._sortByNumElements();
-
-        //disable pointer clicks 
-        // needed for elementsFromPoint()
-        document.querySelector('html').style.pointerEvents = 'none';
+        this._getPageElements(document.body, 0);
+        this._sortByNumElements();
+        this.nextLevel( this.getElementsWithMostDepth() );  //the array of HTML elements to put into the next level
 
         return this;
     }
@@ -18,23 +17,30 @@ class Dom {
     /**
      * Internal method
      * 
+     * Cycles through every element on the page when the game is initialized.
+     * 
      * @param {HTMLObjectElement} element 
      * @param {Number} depth 
      */
-    _getPageElements(element,depth) { //called for every element
+    _getPageElements(element, depth) { //called for every element
 
-        this._sortByDepth(element,depth);
-        let elementTag = element.tagName.toLowerCase();
+        let elementCoords = element.getBoundingClientRect(); //element position
         element.style.pointerEvents = 'none';   //set every elements pointer events to none
-    
-        if(this[elementTag])         //if this property exists
-            this[elementTag].push(element); //push element into it
-        else
-            this[elementTag] = [element]; //create array and store elements inside 
-    
-        for(var i=0; i<element.children.length; i++) {  //recursive call for each element
-            element.depth = depth;
-            this._getPageElements(element.children[i],depth+1);
+        this._sortByDepth(element, depth);
+
+        if (elementCoords.height > 0 || elementCoords.width > 0) { //check if element has width or height
+
+            let elementTag = element.tagName.toLowerCase(); //element tagName
+
+            if (this[elementTag])         //if this property exists
+                this[elementTag].push(element); //push element into it
+            else
+                this[elementTag] = [element]; //create array and store elements inside 
+
+            for (var i = 0; i < element.children.length; i++) {  //recursive call for each element
+                element.depth = depth;
+                this._getPageElements(element.children[i], depth + 1);
+            }
         }
 
         return this;
@@ -75,6 +81,49 @@ class Dom {
     }
 
     /**
+     * Sets CurrentLevelElements with the given elements
+     * 
+     * @param {Array<HTMLElement>} elements 
+     */
+    _setCurrentLevelElements(elements) {
+        let _this = this;
+
+        elements.forEach( function(elem) {
+            let coords = Dom.utilities.getAbsolutePageCoordinates(elem);
+            _this.currentLevelElements.push(
+                {
+                    element: elem, 
+                    x: coords.left , 
+                    y: coords.top, 
+                    rightX: coords.width + coords.left , 
+                    bottomY: coords.height + coords.top
+                });
+        })
+    }
+
+
+    /**
+     * 
+     * @param {Array<Object>} array Array of objects
+     */
+    _setPointerEvents(array){
+        array.forEach( function(object) {
+            object.element.style.pointerEvents = 'auto';
+        })
+    }
+
+
+    /**
+     * 
+     * @param {Array<HTMLElement>} elements 
+     */
+    nextLevel(elements) {
+        this._setCurrentLevelElements( elements);
+        this._setPointerEvents(this.currentLevelElements);
+    }
+
+
+    /**
      * 
      * @param {String} name 
      * @returns {Array<HTMLElement>} this[name]
@@ -98,18 +147,13 @@ class Dom {
         return this[this.elementsSortedByNum.shift().tagName];
     }
 
+    getElementsWithMostDepth() {
+        return this.elementsSortedByDepth.pop();
+    }
+
     smoothScrollTo(element) {
         element.scrollIntoView({behavior: "smooth"});
     }
-
-    setPointerEvents(HTMLArray){
-        HTMLArray.forEach( function(element) {
-            element.style.pointerEvents = 'auto';
-        })
-
-        return this;
-    }
-
 }
 
 Dom.utilities = {
@@ -126,7 +170,9 @@ Dom.utilities = {
         top: box.top + pageYOffset,
         left: box.left + pageXOffset,
         bottom: box.bottom + pageYOffset,
-        right: box.right + pageXOffset
+        right: box.right + pageXOffset,
+        width: box.width,
+        height: box.height
         };
     },
 
@@ -139,8 +185,8 @@ Dom.utilities = {
 
     getCenterOfRect: function(rect) {
         return  {
-                    x: (rect.offsetWidth - rect.style.left)/2,
-                    y: (rect.offsetHeight - rect.style.top)/2 
+                    x: (rect.offsetWidth - parseInt(rect.style.left))/2,
+                    y: (rect.offsetHeight - parseInt(rect.style.top))/2 
                 };
     }
 }

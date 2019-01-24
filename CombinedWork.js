@@ -1,24 +1,16 @@
+//GLOBAL VARIABLES
+speed = 2; //default speed of movement
+bodyWidth = document.body.offsetWidth;
+bodyHeight = document.body.scrollHeight;
+var snake = [];
+
+
 function init() {
+
     window.virtualDom = new Dom();
-    
-    virtualDom.setPointerEvents(virtualDom.getElementsWithHighestCount()); //call this every level
-
-
     createDiv();
-
-    //  GLOBAL VARIABLES
-    window.snakeHead = document.getElementById('snake');
-    window.speed = 2; //default speed of movement
-    window.bodyWidth = document.body.offsetWidth;
-    window.bodyHeight = document.body.scrollHeight;
-
     moveSnake();
-}
-
-
-
-
-
+};
 
 
 
@@ -27,15 +19,13 @@ class Dom {
     constructor() {
         this.elementsSortedByDepth = [];
         this.elementsSortedByNum = [];
+        this.currentLevelElements = [];
 
         //fills the arrays elementsSortedByDepth and elementsSortedByNum
         //and sets a property onto Dom for each type of tagName on the page
         this._getPageElements(document.body, 0);
         this._sortByNumElements();
-
-        //disable pointer clicks 
-        // needed for elementsFromPoint() so that only returns elements that don't have pointerEvents = none
-        document.querySelector('html').style.pointerEvents = 'none';
+        this.nextLevel( this.getElementsWithMostDepth() );  //the array of HTML elements to put into the next level
 
         return this;
     }
@@ -43,23 +33,30 @@ class Dom {
     /**
      * Internal method
      * 
+     * Cycles through every element on the page when the game is initialized.
+     * 
      * @param {HTMLObjectElement} element 
      * @param {Number} depth 
      */
-    _getPageElements(element,depth) { //called for every element
+    _getPageElements(element, depth) { //called for every element
 
-        this._sortByDepth(element,depth);
-        let elementTag = element.tagName.toLowerCase();
+        let elementCoords = element.getBoundingClientRect(); //element position
         element.style.pointerEvents = 'none';   //set every elements pointer events to none
-    
-        if(this[elementTag])         //if this property exists
-            this[elementTag].push(element); //push element into it
-        else
-            this[elementTag] = [element]; //create array and store elements inside 
-    
-        for(var i=0; i<element.children.length; i++) {  //recursive call for each element
-            element.depth = depth;
-            this._getPageElements(element.children[i],depth+1);
+        this._sortByDepth(element, depth);
+
+        if (elementCoords.height > 0 || elementCoords.width > 0) { //check if element has width or height
+
+            let elementTag = element.tagName.toLowerCase(); //element tagName
+
+            if (this[elementTag])         //if this property exists
+                this[elementTag].push(element); //push element into it
+            else
+                this[elementTag] = [element]; //create array and store elements inside 
+
+            for (var i = 0; i < element.children.length; i++) {  //recursive call for each element
+                element.depth = depth;
+                this._getPageElements(element.children[i], depth + 1);
+            }
         }
 
         return this;
@@ -68,8 +65,6 @@ class Dom {
 
     /**
      * Internal method
-     * 
-     * Fills up elementsSortedByDepth
      * 
      * @param {HTMLObjectElement} element 
      * @param {Number} depth 
@@ -88,7 +83,7 @@ class Dom {
     /**
      * Internal method
      * 
-     * Fills up elementsSortedByNum
+     * 
      */
     _sortByNumElements() {
     
@@ -100,6 +95,49 @@ class Dom {
         this.elementsSortedByNum.sort(function (a,b) { return a.numOfElements - b.numOfElements });
         return this;
     }
+
+    /**
+     * Sets CurrentLevelElements with the given elements
+     * 
+     * @param {Array<HTMLElement>} elements 
+     */
+    _setCurrentLevelElements(elements) {
+        let _this = this;
+
+        elements.forEach( function(elem) {
+            let coords = Dom.utilities.getAbsolutePageCoordinates(elem);
+            _this.currentLevelElements.push(
+                {
+                    element: elem, 
+                    x: coords.left , 
+                    y: coords.top, 
+                    rightX: coords.width + coords.left , 
+                    bottomY: coords.height + coords.top
+                });
+        })
+    }
+
+
+    /**
+     * 
+     * @param {Array<Object>} array Array of objects
+     */
+    _setPointerEvents(array){
+        array.forEach( function(object) {
+            object.element.style.pointerEvents = 'auto';
+        })
+    }
+
+
+    /**
+     * 
+     * @param {Array<HTMLElement>} elements 
+     */
+    nextLevel(elements) {
+        this._setCurrentLevelElements( elements);
+        this._setPointerEvents(this.currentLevelElements);
+    }
+
 
     /**
      * 
@@ -125,18 +163,13 @@ class Dom {
         return this[this.elementsSortedByNum.shift().tagName];
     }
 
+    getElementsWithMostDepth() {
+        return this.elementsSortedByDepth.pop();
+    }
+
     smoothScrollTo(element) {
         element.scrollIntoView({behavior: "smooth"});
     }
-
-    setPointerEvents(HTMLArray){
-        HTMLArray.forEach( function(element) {
-            element.style.pointerEvents = 'auto';
-        })
-
-        return this;
-    }
-
 }
 
 Dom.utilities = {
@@ -153,7 +186,9 @@ Dom.utilities = {
         top: box.top + pageYOffset,
         left: box.left + pageXOffset,
         bottom: box.bottom + pageYOffset,
-        right: box.right + pageXOffset
+        right: box.right + pageXOffset,
+        width: box.width,
+        height: box.height
         };
     },
 
@@ -166,16 +201,14 @@ Dom.utilities = {
 
     getCenterOfRect: function(rect) {
         return  {
-                    x: (rect.offsetWidth - rect.style.left)/2,
-                    y: (rect.offsetHeight - rect.style.top)/2 
+                    x: (rect.offsetWidth - parseInt(rect.style.left))/2,
+                    y: (rect.offsetHeight - parseInt(rect.style.top))/2 
                 };
     }
 }
 
 
 
-
-var snake = [];
 
 /**
  * Creates a div element that is appended to <body> 
@@ -207,14 +240,24 @@ function snakeDot() {
     snake.setAttribute('id', 'snake');
     snake.style.border = '1px solid black';
     snake.style.borderRadius = '100px';
-    snake.style.left = '0px'; //start position
-    snake.style.top = '0px';
+    snake.style.left = '20px'; //start position
+    snake.style.top = '550px';
     snake.style.width = '30px';
     snake.style.height = '30px'
     snake.style.background = 'black';
     snake.style.position = 'absolute';
     snake.style.zIndex = '10000000000000';
     document.getElementById('body').appendChild(snake);
+
+    window.snakeHead = document.getElementById('snake');
+
+    snakeHead.getCenterPointX = function() {
+        return parseInt(snakeHead.style.left) + snakeHead.offsetWidth /2;
+    }
+    
+    snakeHead.getCenterPointY = function() {
+        return parseInt(snakeHead.style.top) + snakeHead.offsetHeight/2;
+    }
 }
 
 
@@ -243,6 +286,10 @@ let direction = directions['39'];
 // EVENT LISTENERS
 document.addEventListener('keydown', changeDirection);                  
 document.addEventListener('keyup', decreaseSpeed);
+window.addEventListener('resize', function() {
+    bodyWidth = document.body.offsetWidth;
+    bodyHeight = document.body.scrollHeight;
+})
 
 
 function changeDirection(event) {
@@ -269,6 +316,8 @@ function moveSnake(timestamp) {
 
     snakeHead.scrollIntoView({block: "center"}); //scroll view around the snake
 
+    checkCollision();
+
     //define values so we don't have to compute them multiple times.
     //also makes code a bit easier to read.
     let left = parseInt(snakeHead.style.left);
@@ -276,11 +325,11 @@ function moveSnake(timestamp) {
     let elemWidth = parseInt(snakeHead.style.width);
     let elemHeight = parseInt(snakeHead.style.height);
 
-    let viewportCoords = snakeHead.getBoundingClientRect();
+    /* let viewportCoords = snakeHead.getBoundingClientRect();
     var elements = document.elementsFromPoint(viewportCoords.left+16, viewportCoords.top+16);
 
     if(timestamp %100 < 20)
-        console.log(elements);
+        console.log(elements); */
 
     
     if (left < 0) {                                             //exits left side
@@ -300,3 +349,28 @@ function moveSnake(timestamp) {
     snakeHead.style[direction.item] = (parseInt(snakeHead.style[direction.item]) + direction.sign * speed) + 'px';      //set the new position
     window.requestAnimationFrame(moveSnake);                                                                    //call the fn again
 }
+
+
+function checkCollision() {
+    let centerX = snakeHead.getCenterPointX();
+    let centerY = snakeHead.getCenterPointY();
+
+    for(let i=0; i<virtualDom.currentLevelElements.length; i++){
+
+        let elem = virtualDom.currentLevelElements[i];
+        if(centerX > elem.x && centerY > elem.y && centerX < elem.rightX && centerY < elem.bottomY){ //element eaten nom nom nom
+            //TODO: set opacity to 0
+            virtualDom.currentLevelElements[i] = virtualDom.currentLevelElements[virtualDom.currentLevelElements.length-1];
+            virtualDom.currentLevelElements.pop();
+        }
+    }
+
+    /* virtualDom.currentLevelElements.forEach( function (elem) {
+        if(centerX > elem.x && centerY > elem.y && centerX < elem.rightX && centerY < elem.bottomY){    
+            //Element eaten
+
+        }
+    }) */
+}
+
+init();
