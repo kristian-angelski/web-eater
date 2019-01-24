@@ -13,7 +13,8 @@
     const thirdLvlFood = ['abbr', 'acronym', 'cite', 'code', 'dfn', 'em', 'kbd', 'strong', 'samp', 'var', 'button', 'input', 'label', 'select', 'textarea'];
     const fourthLvlFood = ['table', 'noscript', 'hr', 'form', 'fieldset', 'div', 'dl', 'h4', 'h5', 'h6'];
     const fifthLvlFood = ['p', 'h1', 'h2', 'h3', 'ol', 'ul', 'pre', 'address', 'blockquote'];
-	/**
+    let eaten = {};
+    /**
 	 * Levels - containing different points required for a level up
 	 * and each level's different foods
 	 */
@@ -71,7 +72,7 @@
     function init() {
 
         window.virtualDom = new Dom();
-        foodVisualization()
+        
         createDiv();
         moveSnake();
         createUserElements();
@@ -375,34 +376,6 @@
         paragraph.innerText = 'Use the arrow keys to move.' + '\nTo win the game, eat all the webpage elements';
     }
 
-    function foodVisualization() {
-
-        window.objectives = [virtualDom.a];
-        window.currObjective;
-        window.level = 1;
-
-
-        switch (level) {
-            case 1:
-                currObjective = '<' + objectives[0][0].tagName.toLowerCase() + '>';
-                break;
-            case 2:
-                currObjective = objectives[1];
-                break;
-            case 3:
-                currObjective = objectives[2];
-                break;
-        }
-    }
-
-    /*  var eaten = 2;
- 
-     // if something is eaten: eaten.append(eatenTag);
- 
-     if (eaten == 2) {
-         buttons = 5;
-     } */
-
     function createGameInfo() {
         let paragraph2 = document.createElement('p');
         paragraph2.style.width = '180px';
@@ -415,7 +388,7 @@
         paragraph2.style.fontWeight = 'bold';
         paragraph2.setAttribute('id', 'p2');
         document.getElementById('uidiv').appendChild(paragraph2);
-        paragraph2.innerText = 'Current Level: ' + level + '\nObjective: ' + currObjective + '\nEaten tags:';
+        paragraph2.innerText = 'Current Level: ' + level + '\nObjective: ' + '\nEaten tags:';
         paragraph2.style.textDecoration = 'underline';
 
         let paragraph3 = document.createElement('p');
@@ -428,9 +401,24 @@
         paragraph3.style.fontSize = 'large';
         paragraph2.setAttribute('id', 'p3');
         document.getElementById('uidiv').appendChild(paragraph3);
-        paragraph3.innerText = '<h1>: ' + h1s + '\n<h2>: ' + h2s + '\n<h3>: ' + h3s + '\n<h4>: ' + h4s
-            + '\n<h5>: ' + h5s + '\n<h6>: ' + h6s + '\n<a>: ' + links + '\n<p>: ' + paragraphs + '\n<img>:' + imgs
-            + '\n<div>: ' + divs + '\n<link>: ' + links + '\n<video>: ' + videos + '\n<button>: ' + buttons;
+
+    }
+
+    function eatenElement(tagName) {
+        if (!eaten[tagName]) {
+            eaten[tagName] = 0;
+        }
+        eaten[tagName]++;
+        elementEaten();
+    }
+
+    function elementEaten() {
+        let array = [];
+          Object.keys(eaten).forEach( function(tag) {
+                array.push('<' + tag + '>: ' + eaten[tag] + "\n");
+            });
+            array.join(' ');
+            document.getElementById('p3').innerText = array;
     }
 
 
@@ -515,7 +503,9 @@
                 elem.style.opacity = 0;                                                                                         //opacity 0
 
                 virtualDom.currentLevelElements[i] = virtualDom.currentLevelElements[virtualDom.currentLevelElements.length - 1];
-                virtualDom.currentLevelElements.pop();
+                let elementEaten = virtualDom.currentLevelElements.pop().tagName.toLowerCase();
+                console.log(elementEaten);
+                eatenElement(elementEaten);
             }
         }
     }
