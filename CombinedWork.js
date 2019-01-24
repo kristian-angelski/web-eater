@@ -132,17 +132,25 @@
 
             elements.forEach(function (elem) {
                 let coords = Dom.utilities.getAbsolutePageCoordinates(elem);
-                _this.currentLevelElements.push(
-                    {
-                        element: elem,
-                        x: coords.left,
-                        y: coords.top,
-                        rightX: coords.width + coords.left,
-                        bottomY: coords.height + coords.top,
-                        width: coords.width,
-                        height: coords.height
-                    });
-            })
+
+                elem.absoluteX = coords.left;
+                elem.absoluteY = coords.top;
+                elem.absoluteRight = coords.width + coords.left;
+                elem.absoluteBottom = coords.height + coords.top;
+
+                _this.currentLevelElements.push(elem);
+            });
+        }
+
+        _recalcCurrentLevelElementsPosition() {
+            this.currentLevelElements.forEach(function (elem) {
+
+                let coords = Dom.utilities.getAbsolutePageCoordinates(elem);
+                elem.absoluteX = coords.left;
+                elem.absoluteY = coords.top;
+                elem.absoluteRight = coords.width + coords.left;
+                elem.absoluteBottom = coords.height + coords.top;
+            });
         }
 
 
@@ -151,11 +159,10 @@
          * @param {Array<Object>} array Array of objects
          */
         _setPointerEvents(array) {
-            array.forEach(function (object) {
-                object.element.style.pointerEvents = 'auto';
+            array.forEach(function (element) {
+                element.style.pointerEvents = 'auto';
             })
         }
-
 
         /**
          * 
@@ -314,6 +321,7 @@ function createUserInstructions() {
     window.visualViewport.onresize = function () {
         bodyWidth = htmlPage.scrollWidth;
         bodyHeight = htmlPage.scrollHeight;
+        virtualDom._recalcCurrentLevelElementsPosition();
     }
 
 
@@ -382,24 +390,16 @@ function createUserInstructions() {
 
             let elem = virtualDom.currentLevelElements[i];
 
-            if (elem.x < snakeHead.leftAbs + snakeHead.clientWidth &&
-                elem.x + elem.width > snakeHead.leftAbs &&
-                elem.y < snakeHead.topAbs + snakeHead.clientHeight &&
-                elem.height + elem.y > snakeHead.topAbs) {
+            if (elem.absoluteX < snakeHead.leftAbs + snakeHead.clientWidth &&
+                elem.absoluteRight > snakeHead.leftAbs &&
+                elem.absoluteY < snakeHead.topAbs + snakeHead.clientHeight &&
+                elem.absoluteBottom > snakeHead.topAbs) {
 
-                elem.element.style.opacity = 0;                                                                                         //opacity 0
+                elem.style.opacity = 0;                                                                                         //opacity 0
 
                 virtualDom.currentLevelElements[i] = virtualDom.currentLevelElements[virtualDom.currentLevelElements.length - 1];
                 virtualDom.currentLevelElements.pop();
             }
-             
-           /*  if (centerX > elem.x && centerY > elem.y && centerX < elem.rightX && centerY < elem.bottomY) { //element eaten nom nom
-                
-                elem.element.style.opacity = 0;                                                                                         //opacity 0
-                
-                virtualDom.currentLevelElements[i] = virtualDom.currentLevelElements[virtualDom.currentLevelElements.length - 1];
-                virtualDom.currentLevelElements.pop();
-            } */
         }
     }
     init();
