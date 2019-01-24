@@ -35,7 +35,9 @@
         window.virtualDom = new Dom();
         createDiv();
         moveSnake();
+        createUserElements();
         createUserInstructions();
+        createGameInfo();
     };
 
 
@@ -285,25 +287,50 @@
         snakeHead.bottomAbs = function () { return snakeHead.absTop + snakeHead.offsetHeight; };
     }
 
+    function createUserElements() {
+        let divElement = document.createElement('div');
+        divElement.style.width = 'fit-content';
+        divElement.style.height = 'fit-content';
+        divElement.style.position = 'fixed';
+        divElement.style.right = '0px';
+        divElement.style.top = '20px';
+        divElement.style.zIndex = '100';
+        divElement.style.backgroundColor = 'yellow';
+        divElement.setAttribute('id', 'uidiv');
+        document.body.appendChild(divElement);
 
+    
+    }
 
     // Game Heading and Gameplay Instructions
 function createUserInstructions() {
     let paragraph = document.createElement('p');
     paragraph.style.width = '180px';
-    paragraph.style.height = '20px';
+    paragraph.style.height = 'fit-content';
     paragraph.style.zIndex = '2';
-    paragraph.style.position = 'fixed';
-    paragraph.style.right = '20px';
-    paragraph.style.top = '20px';
+    paragraph.style.position = 'relative';
     paragraph.style.color = 'red';
     paragraph.style.fontFamily = 'Comic Sans MS';
     paragraph.style.fontSize = 'large';
     paragraph.style.fontWeight = 'bold';
     paragraph.setAttribute('id', 'p1');
-    document.body.appendChild(paragraph);
-    let info = document.getElementById('p1');
-    info.innerText = 'WEB EATER' + '\nUse the arrow keys to move.' + '\nTo win the game, eat all the webpage elements';
+    document.getElementById('uidiv').appendChild(paragraph);
+    paragraph.innerText = 'WEB EATER' + '\nUse the arrow keys to move.' + '\nTo win the game, eat all the webpage elements';
+}
+
+function createGameInfo() {
+    let paragraph2 = document.createElement('p');
+    paragraph2.style.width = '180px';
+    paragraph2.style.height = 'fit-content';
+    paragraph2.style.zIndex = '2';
+    paragraph2.style.position = 'relative';
+    paragraph2.style.color = 'green';
+    paragraph2.style.fontFamily = 'Comic Sans MS';
+    paragraph2.style.fontSize = 'large';
+    paragraph2.style.fontWeight = 'bold';
+    paragraph2.setAttribute('id', 'p2');
+    document.getElementById('uidiv').appendChild(paragraph2);
+    paragraph2.innerText = 'Current Level:';
 }
 
 
