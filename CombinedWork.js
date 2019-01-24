@@ -2,7 +2,7 @@
 (function SnakeGame() {
     //GLOBAL VARIABLES
     const defaultSpeed = 2;
-    const speedOnKeyPressed = 5;
+    const speedOnKeyPressed = 12;
     let speed = defaultSpeed;
     let htmlPage = document.querySelector('html');
     let bodyWidth = htmlPage.scrollWidth;
@@ -35,6 +35,7 @@
         window.virtualDom = new Dom();
         createDiv();
         moveSnake();
+        createUserInstructions();
     };
 
 
@@ -283,6 +284,28 @@
         snakeHead.rightAbs = function () { return snakeHead.absLeft + snakeHead.offsetWidth; };
         snakeHead.bottomAbs = function () { return snakeHead.absTop + snakeHead.offsetHeight; };
     }
+
+
+
+    // Game Heading and Gameplay Instructions
+function createUserInstructions() {
+    let paragraph = document.createElement('p');
+    paragraph.style.width = '180px';
+    paragraph.style.height = '20px';
+    paragraph.style.zIndex = '2';
+    paragraph.style.position = 'fixed';
+    paragraph.style.right = '20px';
+    paragraph.style.top = '20px';
+    paragraph.style.color = 'red';
+    paragraph.style.fontFamily = 'Comic Sans MS';
+    paragraph.style.fontSize = 'large';
+    paragraph.style.fontWeight = 'bold';
+    paragraph.setAttribute('id', 'p1');
+    document.body.appendChild(paragraph);
+    let info = document.getElementById('p1');
+    info.innerText = 'WEB EATER' + '\nUse the arrow keys to move.' + '\nTo win the game, eat all the webpage elements';
+}
+
 
 
     // EVENT LISTENERS
