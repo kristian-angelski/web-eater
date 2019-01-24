@@ -414,19 +414,19 @@ function createUserInstructions() {
         }
 
 
-        snakeHead[direction.item + "Abs"] += direction.sign * speed;
-        snakeHead.style[direction.item] = snakeHead[direction.item + "Abs"] + 'px';      //set the new position
+		snakeHead[direction.item + "Abs"] += direction.sign * speed;
+		snakeHead.style[direction.item] = snakeHead[direction.item + "Abs"] + 'px'; //set the new position
 
-        window.requestAnimationFrame(moveSnake);                                         //call the fn again
-    }
+		window.requestAnimationFrame(moveSnake); //call the fn again
+	}
 
 
 
-    function checkCollision() {
+	function checkCollision() {
 
         for (let i = 0; i < virtualDom.currentLevelElements.length; i++) {
 
-            let elem = virtualDom.currentLevelElements[i];
+			let elem = virtualDom.currentLevelElements[i];
 
             if (elem.absoluteX < snakeHead.leftAbs + snakeHead.clientWidth &&
                 elem.absoluteRight > snakeHead.leftAbs &&
