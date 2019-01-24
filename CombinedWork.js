@@ -77,9 +77,6 @@
     };
 
 
-function init() {
-	window.virtualDom = new Dom();
-
     class Dom {
         constructor() {
             this.elementsSortedByDepth = [];
@@ -403,13 +400,6 @@ function createUserInstructions() {
         let elemHeight = snakeHead.offsetHeight;
 
 
-        /* let viewportCoords = snakeHead.getBoundingClientRect();
-        var elements = document.elementsFromPoint(viewportCoords.left+16, viewportCoords.top+16);
-    
-        if(timestamp %100 < 20)
-            console.log(elements); */
-
-
         if (left < 0) {                                             //exits left side
             snakeHead.leftAbs = (bodyWidth - elemWidth);
         }
@@ -434,7 +424,6 @@ function createUserInstructions() {
 
     function checkCollision() {
 
-
         for (let i = 0; i < virtualDom.currentLevelElements.length; i++) {
 
             let elem = virtualDom.currentLevelElements[i];
@@ -453,4 +442,3 @@ function createUserInstructions() {
     }
     init();
 })();
-
