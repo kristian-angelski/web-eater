@@ -10,26 +10,32 @@ let levels = {
 	1: {
 		food: ['a', 'b'],
 		pointsToLevel: 200,
+		speed: 2
 	},
 	2: {
 		food: ['c', 'd'],
 		pointsToLevel: 600,
+		speed: 3
 	},
 	3: {
 		food: ['e', 'f'],
-		pointsToLevel: 1000
+		pointsToLevel: 1000,
+		speed: 4
 	},
 	4: {
 		food: ['g', 'h'],
-		pointsToLevel: 1600
+		pointsToLevel: 1600,
+		speed: 5
 	},
 	5: {
 		food: ['i', 'j'],
-		pointsToLevel: 2000
+		pointsToLevel: 2000,
+		speed: 6
 	},
 	6: {
 		food: ['k', 'l'],
-		pointsToLevel: 2600
+		pointsToLevel: 2600,
+		speed: 7
 	}
 }
 
@@ -56,7 +62,7 @@ function init() {
  */
 function addPoints(points) {
 	currentPoints += points;
-	if ( currentPoints >= levels[level].pointsToLevel ) {
+	if (currentPoints >= levels[level].pointsToLevel) {
 		alert(`gz, you are level ${level + 1} now!`);
 		level++;
 		return;
