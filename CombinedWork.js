@@ -1,4 +1,3 @@
-
 (function SnakeGame() {
     //GLOBAL VARIABLES
     const defaultSpeed = 2;
@@ -7,6 +6,45 @@
     let htmlPage = document.querySelector('html');
     let bodyWidth = htmlPage.scrollWidth;
     let bodyHeight = htmlPage.scrollHeight;
+    let level = 1;
+    let currentPoints = 0;
+    const firstLvlFood = ['symbols', 'coordsOfSymbols'];
+    const secondLvlFood = ['<b>', '<big>', '<i>', '<small>', '<tt>', '<a>', '<bdo>', '<br>', '<img>', '<map>', '<object>', '<q>', '<script>', '<span>', '<sub>', '<sup>'];
+    const thirdLvlFood = ['<abbr>', '<acronym>', '<cite>', '<code>', '<dfn>', '<em>', '<kbd>', '<strong>', '<samp>', '<var>', '<button>', '<input>', '<label>', '<select>', '<textarea>'];
+    const fourthLvlFood = ['<table>', '<noscript>', '<hr>', '<form>', '<fieldset>', '<div>', '<dl>', '<h4>', '<h5>', '<h6>'];
+    const fifthLvlFood = ['<p>', '<h1>', '<h2>', '<h3>', '<ol>', '<ul>', '<pre>', '<address>', '<blockquote>'];
+    /**
+     * Levels - containing different points required for a level up
+     * and each level's different foods
+     */
+    let levels = {
+      1: {
+        food: firstLvlFood,
+        pointsToLevel: 200,
+        speed: 2,
+      },
+      2: {
+        food: secondLvlFood,
+        pointsToLevel: 600,
+        speed: 3
+      },
+      3: {
+        food: thirdLvlFood,
+        pointsToLevel: 1000,
+        speed: 4
+      },
+      4: {
+        food: fourthLvlFood,
+        pointsToLevel: 1600,
+        speed: 5
+      },
+      5: {
+        food: fifthLvlFood,
+        pointsToLevel: 2000,
+        speed: 6
+      }
+    }
+    
     const directions = {
         39: {
             item: 'left',
@@ -39,13 +77,15 @@
     };
 
 
+function init() {
+	window.virtualDom = new Dom();
 
     class Dom {
-
         constructor() {
             this.elementsSortedByDepth = [];
             this.elementsSortedByNum = [];
             this.currentLevelElements = [];
+
 
             //fills the arrays elementsSortedByDepth and elementsSortedByNum
             //and sets a property onto Dom for each type of tagName on the page
@@ -69,7 +109,9 @@
             element.style.pointerEvents = 'none';   //set every elements pointer events to none
             this._sortByDepth(element, depth);
 
+
             if (element.clientHeight > 0 && element.clientWidth > 0) { //check if element has width or height
+
 
                 let elementTag = element.tagName.toLowerCase(); //element tagName
 
@@ -308,6 +350,7 @@ function createUserInstructions() {
 
 
 
+
     // EVENT LISTENERS
     document.addEventListener('keydown', changeDirection);
     document.addEventListener('keyup', decreaseSpeed);
@@ -315,7 +358,6 @@ function createUserInstructions() {
         bodyWidth = htmlPage.scrollWidth;
         bodyHeight = htmlPage.scrollHeight;
     }
-
 
     function changeDirection(event) {
         if (Object.keys(directions).indexOf(String(event.keyCode)) != -1) {
@@ -341,7 +383,9 @@ function createUserInstructions() {
 
         snakeHead.scrollIntoView({ block: "center", inline: "center" }); //scroll view around the snake
 
+
         checkCollision();
+
 
         //define values so we don't have to compute them multiple times.
         //also makes code a bit easier to read.
@@ -350,11 +394,13 @@ function createUserInstructions() {
         let elemWidth = snakeHead.offsetWidth;
         let elemHeight = snakeHead.offsetHeight;
 
+
         /* let viewportCoords = snakeHead.getBoundingClientRect();
         var elements = document.elementsFromPoint(viewportCoords.left+16, viewportCoords.top+16);
     
         if(timestamp %100 < 20)
             console.log(elements); */
+
 
         if (left < 0) {                                             //exits left side
             snakeHead.leftAbs = (bodyWidth - elemWidth);
@@ -369,6 +415,7 @@ function createUserInstructions() {
             snakeHead.topAbs = 0;
         }
 
+
         snakeHead[direction.item + "Abs"] += direction.sign * speed;
         snakeHead.style[direction.item] = snakeHead[direction.item + "Abs"] + 'px';      //set the new position
 
@@ -376,7 +423,9 @@ function createUserInstructions() {
     }
 
 
+
     function checkCollision() {
+
 
         for (let i = 0; i < virtualDom.currentLevelElements.length; i++) {
 
@@ -404,3 +453,4 @@ function createUserInstructions() {
     }
     init();
 })();
+
