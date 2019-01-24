@@ -18,6 +18,19 @@ function createDiv() {
 
 createDiv();
 
+function createParagraph() {
+    let paragraph = document.createElement('p');
+    paragraph.style.width = '20%';
+    paragraph.style.height = '20%';
+    paragraph.style.zIndex = '2';
+    paragraph.style.position = 'absolute';
+    paragraph.style.right = '20px';
+    paragraph.style.top = '20px';
+    paragraph.setAttribute('id', 'p1');
+    var info = document.getElementById('p1');
+    info.textContent = 'WEB EATER<br/>Use arrow keys to move.<br/>To win the game, eat all the webpage elements';
+    }
+
 const speed = 2;
 let w = document.body.offsetWidth;
 let h = document.body.scrollHeight;
