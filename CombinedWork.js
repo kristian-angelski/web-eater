@@ -9,40 +9,40 @@
     let level = 1;
     let currentPoints = 0;
     const firstLvlFood = ['symbols', 'coordsOfSymbols'];
-    const secondLvlFood = ['<b>', '<big>', '<i>', '<small>', '<tt>', '<a>', '<bdo>', '<br>', '<img>', '<map>', '<object>', '<q>', '<script>', '<span>', '<sub>', '<sup>'];
-    const thirdLvlFood = ['<abbr>', '<acronym>', '<cite>', '<code>', '<dfn>', '<em>', '<kbd>', '<strong>', '<samp>', '<var>', '<button>', '<input>', '<label>', '<select>', '<textarea>'];
-    const fourthLvlFood = ['<table>', '<noscript>', '<hr>', '<form>', '<fieldset>', '<div>', '<dl>', '<h4>', '<h5>', '<h6>'];
-    const fifthLvlFood = ['<p>', '<h1>', '<h2>', '<h3>', '<ol>', '<ul>', '<pre>', '<address>', '<blockquote>'];
-    /**
-     * Levels - containing different points required for a level up
-     * and each level's different foods
-     */
+    const secondLvlFood = ['b', 'big', 'i', 'small', 'tt', 'a', 'bdo', 'br', 'img', 'map', 'object', 'q', 'script', 'span', 'sub', 'sup'];
+    const thirdLvlFood = ['abbr', 'acronym', 'cite', 'code', 'dfn', 'em', 'kbd', 'strong', 'samp', 'var', 'button', 'input', 'label', 'select', 'textarea'];
+    const fourthLvlFood = ['table', 'noscript', 'hr', 'form', 'fieldset', 'div', 'dl', 'h4', 'h5', 'h6'];
+    const fifthLvlFood = ['p', 'h1', 'h2', 'h3', 'ol', 'ul', 'pre', 'address', 'blockquote'];
+	/**
+	 * Levels - containing different points required for a level up
+	 * and each level's different foods
+	 */
     let levels = {
-      1: {
-        food: firstLvlFood,
-        pointsToLevel: 200,
-        speed: 2,
-      },
-      2: {
-        food: secondLvlFood,
-        pointsToLevel: 600,
-        speed: 3
-      },
-      3: {
-        food: thirdLvlFood,
-        pointsToLevel: 1000,
-        speed: 4
-      },
-      4: {
-        food: fourthLvlFood,
-        pointsToLevel: 1600,
-        speed: 5
-      },
-      5: {
-        food: fifthLvlFood,
-        pointsToLevel: 2000,
-        speed: 6
-      }
+        1: {
+            food: firstLvlFood,
+            pointsToLevel: 200,
+            speed: 2,
+        },
+        2: {
+            food: secondLvlFood,
+            pointsToLevel: 600,
+            speed: 3
+        },
+        3: {
+            food: thirdLvlFood,
+            pointsToLevel: 1000,
+            speed: 4
+        },
+        4: {
+            food: fourthLvlFood,
+            pointsToLevel: 1600,
+            speed: 5
+        },
+        5: {
+            food: fifthLvlFood,
+            pointsToLevel: 2000,
+            speed: 6
+        }
     }
     
     const directions = {
