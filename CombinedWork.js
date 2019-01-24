@@ -294,7 +294,7 @@
         divElement.style.height = 'fit-content';
         divElement.style.position = 'fixed';
         divElement.style.right = '0px';
-        divElement.style.top = '20px';
+        divElement.style.top = '90px';
         divElement.style.zIndex = '100';
         divElement.setAttribute('id', 'uidiv');
         document.body.appendChild(divElement);
@@ -315,11 +315,12 @@
         paragraph.innerText = 'Use the arrow keys to move.' + '\nTo win the game, eat all the webpage elements';
     }
 
-    function foodVisualization() {
+function foodVisualization() {
 
     window.objectives = [virtualDom.a];
     window.currObjective;
     window.level = 1;
+    
 
     switch (level) {
         case 1:
@@ -332,7 +333,14 @@
         currObjective = objectives[2];
         break;
     }
-        
+        }
+
+    var eaten = 2;
+
+// if something is eaten: eaten.append(eatenTag);
+    
+    if (eaten == 2) {
+        buttons = 5;
     }
 
     function createGameInfo() {
@@ -344,10 +352,25 @@
         paragraph2.style.color = 'darkcyan';
         paragraph2.style.fontFamily = 'Comic Sans MS';
         paragraph2.style.fontSize = 'large';
-        // paragraph2.style.fontWeight = 'bold';
+        paragraph2.style.fontWeight = 'bold';
         paragraph2.setAttribute('id', 'p2');
         document.getElementById('uidiv').appendChild(paragraph2);
-        paragraph2.innerText = 'Current Level: ' + level + '\nObjective: ' + currObjective + '\nEaten:';
+        paragraph2.innerText = 'Current Level: ' + level + '\nObjective: ' + currObjective + '\nEaten tags:';
+        paragraph2.style.textDecoration = 'underline';
+
+        let paragraph3 = document.createElement('p');
+        paragraph3.style.width = '180px';
+        paragraph3.style.height = 'fit-content';
+        paragraph3.style.zIndex = '2';
+        paragraph3.style.position = 'relative';
+        paragraph3.style.color = 'darkcyan';
+        paragraph3.style.fontFamily = 'auto';
+        paragraph3.style.fontSize = 'large';
+        paragraph2.setAttribute('id', 'p3');
+        document.getElementById('uidiv').appendChild(paragraph3);
+        paragraph3.innerText = '<h1>: ' + h1s + '\n<h2>: ' + h2s + '\n<h3>: ' + h3s + '\n<h4>: ' + h4s
+        + '\n<h5>: ' + h5s + '\n<h6>: ' + h6s + '\n<a>: ' + links + '\n<p>: ' + paragraphs + '\n<img>:' + imgs
+        + '\n<div>: ' + divs + '\n<link>: ' + links + '\n<video>: ' + videos + '\n<button>: ' + buttons;
     }
 
 
