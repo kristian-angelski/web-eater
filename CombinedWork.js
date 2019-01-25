@@ -389,7 +389,8 @@
         paragraph2.style.textDecoration = 'underline';
         paragraph2.setAttribute('id', 'p2');
         document.getElementById('uidiv').appendChild(paragraph2);
-        paragraph2.innerText = 'Current Level: ' + level + '\nObjective: ' + '\nEaten tags:';
+        paragraph2.innerText = 'Current Level: ' + level + '\nObjective: ' //Add the elements to be eaten according to the level
+        + '\nEaten tags:';
 
         let paragraph3 = document.createElement('p');
         paragraph3.style.width = 'fit-content';
@@ -416,10 +417,10 @@
     function elementEaten() {
         let array = [];
           Object.keys(eaten).forEach(function(tag) {
-                array.push('<' + tag + '>: ' + eaten[tag] + "\n");
+                array.push('<' + tag + '>: ' + eaten[tag]);
             });
-        
-            document.getElementById('p3').innerText = array;
+            
+            document.getElementById('p3').innerText = array.join('\n');
     }
 
 
@@ -512,3 +513,4 @@
     }
     init();
 })();
+
