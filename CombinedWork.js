@@ -425,7 +425,7 @@
         paragraph2.setAttribute('id', 'p2');
         document.getElementById('uidiv').appendChild(paragraph2);
         paragraph2.innerText = 'Current Level: ' + level + '\nPoints: ' + currentPoints + 
-        '\nElements Left: ' + virtualDom.currentLevelElements.length + '\nTime: ' + parseInt(timePassed / 60) + ':' + timePassed % 60 +'\nEaten tags:';
+        '\nElements Left: ' + virtualDom.currentLevelElements.length + '\nTime: 0:00' + '\nEaten tags:';
 
         let paragraph3 = document.createElement('p');
         paragraph3.style.width = 'fit-content';
@@ -442,8 +442,16 @@
     }
 
     function updateGameInfo() {
+
+        let timePlayed = null;
+        if (timePassed % 60 < 10 )
+            timePlayed = parseInt(timePassed / 60) + ':0' + timePassed % 60;
+        else 
+            timePlayed = parseInt(timePassed / 60) + ':' + timePassed % 60;
+
+
         document.getElementById('p2').innerText =  'Current Level: ' + level + '\nPoints: ' + currentPoints + 
-        '\nElements Left: ' + virtualDom.currentLevelElements.length + '\nTime: ' + parseInt(timePassed / 60) + ':' + timePassed % 60 +'\nEaten tags:';
+        '\nElements Left: ' + virtualDom.currentLevelElements.length + '\nTime: ' + timePlayed +'\nEaten tags:';
     }
 
     function eatenElement(element) {
