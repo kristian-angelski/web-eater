@@ -141,8 +141,6 @@
 		 * @param {Number} depth 
 		 */
         _getPageElements(element, depth) { //called for every element
-
-            element.style.pointerEvents = 'none'; //set every elements pointer events to none
             this._sortByDepth(element, depth);
 
             if (element.clientHeight > 0 && element.clientWidth > 0) { //check if element has width or height
@@ -154,7 +152,7 @@
                 else
                     this[elementTag] = [element]; //create array and store elements inside 
 
-                for (var i = 0; i < element.children.length; i++) { //recursive call for each element
+                for (let i = 0; i < element.children.length; i++) { //recursive call for each element
                     element.depth = depth;
                     this._getPageElements(element.children[i], depth + 1);
                 }
@@ -190,10 +188,12 @@
 
             Object.keys(this).forEach(function (key) {
                 if (key != "elementsSortedByNum" && key != 'elementsSortedByDepth' && key != 'currentLevelElements')
-                    this.elementsSortedByNum.push({
-                        numOfElements: this[key].length,
-                        tagName: key
-                    });
+                    this.elementsSortedByNum.push(
+                        {
+                            numOfElements: this[key].length,
+                            tagName: key
+                        }
+                    );
             }.bind(this));
 
             this.elementsSortedByNum.sort(function (a, b) {
@@ -423,7 +423,7 @@
         paragraph2.setAttribute('id', 'p2');
         document.getElementById('uidiv').appendChild(paragraph2);
         paragraph2.innerText = 'Current Level: ' + level + '\nPoints: ' + currentPoints + 
-        '\nElements Left: ' + virtualDom.currentLevelElements.length +'\nEaten tags:';
+        '\nElements Left: ' + virtualDom.currentLevelElements.length + '\nTime: ' + parseInt(timePassed / 60) + ':' + timePassed % 60 +'\nEaten tags:';
 
         let paragraph3 = document.createElement('p');
         paragraph3.style.width = 'fit-content';
@@ -439,11 +439,9 @@
 
     }
 
-    function updateGameInfo(element) {
-        document.getElementById('p2').innerText = 'Current Level: ' + level + '\nPoints: ' + currentPoints + 
-        '\nElements Left: ' + virtualDom.currentLevelElements.length +'\nEaten tags:';
-
-        eatenElement(element);
+    function updateGameInfo() {
+        document.getElementById('p2').innerText =  'Current Level: ' + level + '\nPoints: ' + currentPoints + 
+        '\nElements Left: ' + virtualDom.currentLevelElements.length + '\nTime: ' + parseInt(timePassed / 60) + ':' + timePassed % 60 +'\nEaten tags:';
     }
 
     function eatenElement(element) {
@@ -506,7 +504,7 @@
             inline: "center"
         });
 
-
+        updateGameInfo();
         checkCollision();
 
 
@@ -556,8 +554,7 @@
                 virtualDom.currentLevelElements.pop();
 
                 addPoints(1);
-                updateGameInfo(elem);
-                console.log(currentPoints);
+                eatenElement(elem);
             }
         }
     }
