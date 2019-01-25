@@ -378,7 +378,7 @@
 
     function createGameInfo() {
         let paragraph2 = document.createElement('p');
-        paragraph2.style.width = '180px';
+        paragraph2.style.width = 'fit-content';
         paragraph2.style.height = 'fit-content';
         paragraph2.style.zIndex = '2';
         paragraph2.style.position = 'relative';
@@ -386,20 +386,21 @@
         paragraph2.style.fontFamily = 'Comic Sans MS';
         paragraph2.style.fontSize = 'large';
         paragraph2.style.fontWeight = 'bold';
+        paragraph2.style.textDecoration = 'underline';
         paragraph2.setAttribute('id', 'p2');
         document.getElementById('uidiv').appendChild(paragraph2);
         paragraph2.innerText = 'Current Level: ' + level + '\nObjective: ' + '\nEaten tags:';
-        paragraph2.style.textDecoration = 'underline';
 
         let paragraph3 = document.createElement('p');
-        paragraph3.style.width = '180px';
+        paragraph3.style.width = 'fit-content';
         paragraph3.style.height = 'fit-content';
         paragraph3.style.zIndex = '2';
         paragraph3.style.position = 'relative';
         paragraph3.style.color = 'darkcyan';
         paragraph3.style.fontFamily = 'auto';
         paragraph3.style.fontSize = 'large';
-        paragraph2.setAttribute('id', 'p3');
+        paragraph3.style.fontWeight = 'bold';
+        paragraph3.setAttribute('id', 'p3');
         document.getElementById('uidiv').appendChild(paragraph3);
 
     }
@@ -414,10 +415,10 @@
 
     function elementEaten() {
         let array = [];
-          Object.keys(eaten).forEach( function(tag) {
+          Object.keys(eaten).forEach(function(tag) {
                 array.push('<' + tag + '>: ' + eaten[tag] + "\n");
             });
-            array.join(' ');
+        
             document.getElementById('p3').innerText = array;
     }
 
@@ -504,7 +505,7 @@
 
                 virtualDom.currentLevelElements[i] = virtualDom.currentLevelElements[virtualDom.currentLevelElements.length - 1];
                 let elementEaten = virtualDom.currentLevelElements.pop().tagName.toLowerCase();
-                console.log(elementEaten);
+
                 eatenElement(elementEaten);
             }
         }
