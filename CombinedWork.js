@@ -1,50 +1,49 @@
 (function SnakeGame() {
     //GLOBAL VARIABLES
-    const defaultSpeed = 2;
-    const speedOnKeyPressed = 12;
-    let speed = defaultSpeed;
+    let level = 2;
+    let currentPoints = 0;
     let htmlPage = document.querySelector('html');
     let bodyWidth = htmlPage.scrollWidth;
     let bodyHeight = htmlPage.scrollHeight;
-    let level = 1;
-    let currentPoints = 0;
-    const firstLvlFood = ['symbols', 'coordsOfSymbols'];
-    const secondLvlFood = ['b', 'big', 'i', 'small', 'tt', 'a', 'bdo', 'br', 'img', 'map', 'object', 'q', 'script', 'span', 'sub', 'sup'];
-    const thirdLvlFood = ['abbr', 'acronym', 'cite', 'code', 'dfn', 'em', 'kbd', 'strong', 'samp', 'var', 'button', 'input', 'label', 'select', 'textarea'];
-    const fourthLvlFood = ['table', 'noscript', 'hr', 'form', 'fieldset', 'div', 'dl', 'h4', 'h5', 'h6'];
-    const fifthLvlFood = ['p', 'h1', 'h2', 'h3', 'ol', 'ul', 'pre', 'address', 'blockquote'];
+    let timeStart = null;
+    let timePassed = null;
     let eaten = {};
-    /**
+
+	/**
 	 * Levels - containing different points required for a level up
 	 * and each level's different foods
 	 */
-    let levels = {
+    const levels = {
         1: {
-            food: firstLvlFood,
+            food: ['symbols', 'coordsOfSymbols'],
             pointsToLevel: 200,
-            speed: 2,
+            speed: 3,
         },
         2: {
-            food: secondLvlFood,
+            food: ['b', 'big', 'i', 'small', 'tt', 'a', 'bdo', 'br', 'img', 'map', 'object', 'q', 'span', 'sub', 'sup'],
             pointsToLevel: 600,
-            speed: 3
-        },
-        3: {
-            food: thirdLvlFood,
-            pointsToLevel: 1000,
             speed: 4
         },
-        4: {
-            food: fourthLvlFood,
-            pointsToLevel: 1600,
+        3: {
+            food: ['abbr', 'acronym', 'cite', 'code', 'dfn', 'em', 'kbd', 'strong', 'samp', 'var', 'button', 'input', 'label', 'select', 'textarea'],
+            pointsToLevel: 1000,
             speed: 5
         },
+        4: {
+            food: ['table', 'noscript', 'hr', 'form', 'fieldset', 'div', 'dl', 'h4', 'h5', 'h6'],
+            pointsToLevel: 1600,
+            speed: 6
+        },
         5: {
-            food: fifthLvlFood,
+            food: ['p', 'h1', 'h2', 'h3', 'ol', 'ul', 'pre', 'address', 'blockquote'],
             pointsToLevel: 2000,
             speed: 6
         }
     }
+
+    let defaultSpeed = levels[level].speed;
+    let speed = defaultSpeed;
+    let speedOnKeyPressed = levels[level].speed + 3;
 
     const directions = {
         39: {
@@ -65,8 +64,40 @@
         }, //bottom
     }
     let direction = directions['39'];
-
     let snake = [];
+
+
+
+    /**
+	 * Function that will add points, based on eating different elements
+	 * @param {Number} points
+	 */
+    function addPoints(points) {
+        currentPoints += points;
+
+        if(levels[level+1]){  //check if there is a next level
+            if(virtualDom.currentLevelElements.length){ //check if there are any elements left to eat
+                if (currentPoints >= levels[level].pointsToLevel) { 
+                    nextLevel();
+                    return;
+                } else {
+                    console.log(`You need ${levels[level].pointsToLevel - currentPoints} more points to level up.`);
+                }
+            }
+            else {  //if there is nothing left to eat in currentLevelElements array
+                nextLevel();
+            }
+        }
+    }
+
+
+    function nextLevel() {
+        alert(`gz, you are level ${level + 1} now!`);
+        level++;
+        defaultSpeed = levels[level].speed;
+        speedOnKeyPressed = defaultSpeed + 3;
+        virtualDom.setLevelElements();
+    }
 
 
     function init() {
@@ -74,10 +105,10 @@
         window.virtualDom = new Dom();
         
         createDiv();
-        moveSnake();
         createUserElements();
         createUserInstructions();
         createGameInfo();
+        moveSnake();
     };
 
 
@@ -93,34 +124,34 @@
             //and sets a property onto Dom for each type of tagName on the page
             this._getPageElements(document.body, 0);
             this._sortByNumElements();
-            this.nextLevel(this.getElementsWithMostDepth());  //the array of HTML elements to put into the next level
+            this.setLevelElements();  //change the level before calling it again
 
             return this;
         }
 
-        /**
-         * Internal method
-         * 
-         * Cycles through every element on the page when the game is initialized.
-         * 
-         * @param {HTMLObjectElement} element 
-         * @param {Number} depth 
-         */
+		/**
+		 * Internal method
+		 * 
+		 * Cycles through every element on the page when the game is initialized.
+		 * 
+		 * @param {HTMLObjectElement} element 
+		 * @param {Number} depth 
+		 */
         _getPageElements(element, depth) { //called for every element
 
-            element.style.pointerEvents = 'none';   //set every elements pointer events to none
+            element.style.pointerEvents = 'none'; //set every elements pointer events to none
             this._sortByDepth(element, depth);
 
             if (element.clientHeight > 0 && element.clientWidth > 0) { //check if element has width or height
 
                 let elementTag = element.tagName.toLowerCase(); //element tagName
 
-                if (this[elementTag])         //if this property exists
+                if (this[elementTag]) //if this property exists
                     this[elementTag].push(element); //push element into it
                 else
                     this[elementTag] = [element]; //create array and store elements inside 
 
-                for (var i = 0; i < element.children.length; i++) {  //recursive call for each element
+                for (var i = 0; i < element.children.length; i++) { //recursive call for each element
                     element.depth = depth;
                     this._getPageElements(element.children[i], depth + 1);
                 }
@@ -130,12 +161,12 @@
         }
 
 
-        /**
-         * Internal method
-         * 
-         * @param {HTMLObjectElement} element 
-         * @param {Number} depth 
-         */
+		/**
+		 * Internal method
+		 * 
+		 * @param {HTMLObjectElement} element 
+		 * @param {Number} depth 
+		 */
         _sortByDepth(element, depth) {
             if (this.elementsSortedByDepth[depth])
                 this.elementsSortedByDepth[depth].push(element);
@@ -147,59 +178,53 @@
 
 
 
-        /**
-         * Internal method
-         * 
-         * 
-         */
+		/**
+		 * Internal method
+		 * 
+		 * 
+		 */
         _sortByNumElements() {
 
             Object.keys(this).forEach(function (key) {
                 if (key != "elementsSortedByNum")
-                    this.elementsSortedByNum.push({ numOfElements: this[key].length, tagName: key });
+                    this.elementsSortedByNum.push({
+                        numOfElements: this[key].length,
+                        tagName: key
+                    });
             }.bind(this));
 
-            this.elementsSortedByNum.sort(function (a, b) { return a.numOfElements - b.numOfElements });
+            this.elementsSortedByNum.sort(function (a, b) {
+                return a.numOfElements - b.numOfElements
+            });
             return this;
         }
 
-        /**
-         * Sets CurrentLevelElements with the given elements
-         * 
-         * @param {Array<HTMLElement>} elements 
-         */
-        _setCurrentLevelElements(elements) {
-            let _this = this;
-            this.currentLevelElements = [];
 
-            elements.forEach(function (elem) {
-                let coords = Dom.utilities.getAbsolutePageCoordinates(elem);
-                _this.currentLevelElements.push(
-                    {
-                        element: elem,
-                        x: coords.left,
-                        y: coords.top,
-                        rightX: coords.width + coords.left,
-                        bottomY: coords.height + coords.top,
-                        width: coords.width,
-                        height: coords.height
-                    });
-            })
+        _getArrayOfElements() {
+            let arrayWithTagNames = levels[level].food;
+            let array= [];
+
+            for(let i=0; i< arrayWithTagNames.length; i++) {
+                if(this[arrayWithTagNames[i]]){
+                    array = array.concat(this[arrayWithTagNames[i]]);
+                }
+            }
+            return array;
         }
 
-
-        /**
-         * Sets CurrentLevelElements with the given elements
-         * 
-         * @param {Array<HTMLElement>} elements 
-         */
-        _setCurrentLevelElements(elements) {
+		/**
+		 * Sets CurrentLevelElements with the given elements
+		 * 
+		 * @param {Array<HTMLElement>} elements 
+		 */
+        _setCurrentLevelElements() {
+            let elements = this._getArrayOfElements();
             let _this = this;
             this.currentLevelElements = [];
 
             elements.forEach(function (elem) {
                 let coords = Dom.utilities.getAbsolutePageCoordinates(elem);
-
+                elem.style.background = 'yellow';
                 elem.absoluteX = coords.left;
                 elem.absoluteY = coords.top;
                 elem.absoluteRight = coords.width + coords.left;
@@ -220,37 +245,36 @@
             });
         }
 
-
-        /**
-         * 
-         * @param {Array<Object>} array Array of objects
-         */
-        _setPointerEvents(array) {
-            array.forEach(function (element) {
-                element.style.pointerEvents = 'auto';
-            })
-        }
-
-        /**
-         * 
-         * @param {Array<HTMLElement>} elements 
-         */
-        nextLevel(elements) {
+		/**
+		 * 
+		 * @param {Array<HTMLElement>} elements 
+		 */
+        setLevelElements(elements) {
             this._setCurrentLevelElements(elements);
-            this._setPointerEvents(this.currentLevelElements);
+            //other stuff to do at the start of each level
         }
 
-        /**
-         * Returns and removes the array containing the elements with the highest count
-         * @returns {Array<HTMLElement>} E.g. returns all div elements if div is the highest encountered element tag
-         */
+
+		/**
+		 * 
+		 * @param {String} name 
+		 * @returns {Array<HTMLElement>} this[name]
+		 */
+        getElementsByTagName(name) {
+            return this[name];
+        }
+
+		/**
+		 * Returns and removes the array containing the elements with the highest count
+		 * @returns {Array<HTMLElement>} E.g. returns all div elements if div is the highest encountered element tag
+		 */
         getElementsWithHighestCount() {
             return this[this.elementsSortedByNum.pop().tagName];
         }
 
-        /**
-         * @returns {Array<HTMLElement>} E.g. returns all div elements if div is the lowest encountered element tag
-         */
+		/**
+		 * @returns {Array<HTMLElement>} E.g. returns all div elements if div is the lowest encountered element tag
+		 */
         getElementsWithLowestCount() {
             return this[this.elementsSortedByNum.shift().tagName];
         }
@@ -260,17 +284,19 @@
         }
 
         smoothScrollTo(element) {
-            element.scrollIntoView({ behavior: "smooth" });
+            element.scrollIntoView({
+                behavior: "smooth"
+            });
         }
     }
 
     Dom.utilities = {
 
 
-        /**
-         * Get the absolute page coordiantes of an element.
-         * @param {HTMLElement} elem 
-         */
+		/**
+		 * Get the absolute page coordiantes of an element.
+		 * @param {HTMLElement} elem 
+		 */
         getAbsolutePageCoordinates(elem) {
             let box = elem.getBoundingClientRect();
 
@@ -302,10 +328,10 @@
 
 
 
-    /**
-     * Creates a div element that is appended to <body> 
-     * This div acts as a layer on top of the <body>
-     */
+	/**
+	 * Creates a div element that is appended to <body> 
+	 * This div acts as a layer on top of the <body>
+	 */
     function createDiv() {
         let div = document.createElement('div');
         div.style.width = '100%';
@@ -324,9 +350,9 @@
         snakeDot();
     }
 
-    /**
-     * Creates the Snake and appends it to <body>
-     */
+	/**
+	 * Creates the Snake and appends it to <body>
+	 */
     function snakeDot() {
         let snake = document.createElement('div');
         snake.setAttribute('id', 'snake');
@@ -345,8 +371,12 @@
         snakeHead.leftAbs = parseInt(snakeHead.style.left);
         snakeHead.topAbs = parseInt(snakeHead.style.top);
 
-        snakeHead.rightAbs = function () { return snakeHead.absLeft + snakeHead.offsetWidth; };
-        snakeHead.bottomAbs = function () { return snakeHead.absTop + snakeHead.offsetHeight; };
+        snakeHead.rightAbs = function () {
+            return snakeHead.absLeft + snakeHead.offsetWidth;
+        };
+        snakeHead.bottomAbs = function () {
+            return snakeHead.absTop + snakeHead.offsetHeight;
+        };
     }
 
     function createUserElements() {
@@ -448,14 +478,20 @@
 
 
 
-    /**
-     * The window.requestAnimationFrame() method tells the browser that you wish to perform an animation and requests that the browser call a specified function to update an animation before the next repaint.
-     * 
-     * @param {Number} timestamp - argument of requestAnimationFrame that is automatically passed when the method is called. Similar to performance.now()
-     */
+	/**
+	 * The window.requestAnimationFrame() method tells the browser that you wish to perform an animation and requests that the browser call a specified function to update an animation before the next repaint.
+	 * 
+	 * @param {Number} timestamp - argument of requestAnimationFrame that is automatically passed when the method is called. Similar to performance.now()
+	 */
     function moveSnake(timestamp) {
+        if (!timeStart) timeStart = timestamp;
+        timePassed = parseInt((timestamp - timeStart) / 1000); //in seconds
+        console.log(timePassed);
 
-        snakeHead.scrollIntoView({ block: "center", inline: "center" }); //scroll view around the snake
+        snakeHead.scrollIntoView({  //scroll view around the snake
+            block: "center",
+            inline: "center"
+        });
 
 
         checkCollision();
@@ -469,16 +505,13 @@
         let elemHeight = snakeHead.offsetHeight;
 
 
-        if (left < 0) {                                             //exits left side
+        if (left < 0) { //exits left side
             snakeHead.leftAbs = (bodyWidth - elemWidth);
-        }
-        else if (top < 0) {                                         // exits top side
+        } else if (top < 0) { // exits top side
             snakeHead.topAbs = (bodyHeight - elemHeight);
-        }
-        else if (left + elemWidth > bodyWidth) {                    // exits right side
+        } else if (left + elemWidth > bodyWidth) { // exits right side
             snakeHead.leftAbs = 0;
-        }
-        else if (top + elemHeight > bodyHeight) {                   //exits bottom side
+        } else if (top + elemHeight > bodyHeight) { //exits bottom side
             snakeHead.topAbs = 0;
         }
 
@@ -491,23 +524,27 @@
 
 
 
-    function checkCollision() {
+    function checkCollision(timestamp) {
 
-        for (let i = 0; i < virtualDom.currentLevelElements.length; i++) {
+        for (let i = 0; i < virtualDom.currentLevelElements.length; i++) { //check all elements
 
             let elem = virtualDom.currentLevelElements[i];
 
+            //if collision
             if (elem.absoluteX < snakeHead.leftAbs + snakeHead.clientWidth &&
                 elem.absoluteRight > snakeHead.leftAbs &&
                 elem.absoluteY < snakeHead.topAbs + snakeHead.clientHeight &&
                 elem.absoluteBottom > snakeHead.topAbs) {
 
-                elem.style.opacity = 0;                                                                                         //opacity 0
+                elem.style.opacity = 0; //opacity 0
+                eatenElement(elem.tagName.toLowerCase());
 
-                virtualDom.currentLevelElements[i] = virtualDom.currentLevelElements[virtualDom.currentLevelElements.length - 1];
-                let elementEaten = virtualDom.currentLevelElements.pop().tagName.toLowerCase();
+                //override the eaten element in the array with the last element and then remove the last element in array
+                virtualDom.currentLevelElements[i] = virtualDom.currentLevelElements[virtualDom.currentLevelElements.length - 1]; 
+                virtualDom.currentLevelElements.pop(); 
 
-                eatenElement(elementEaten);
+                addPoints(1);
+                console.log(currentPoints);
             }
         }
     }
