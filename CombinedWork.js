@@ -486,7 +486,7 @@
     function moveSnake(timestamp) {
         if (!timeStart) timeStart = timestamp;
         timePassed = parseInt((timestamp - timeStart) / 1000); //in seconds
-        console.log(timePassed);
+        //console.log(timePassed);
 
         snakeHead.scrollIntoView({  //scroll view around the snake
             block: "center",
