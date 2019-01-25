@@ -67,6 +67,19 @@
     let snake = [];
 
 
+    function init() {
+
+        window.virtualDom = new Dom();
+        
+        createDiv();
+        createUserElements();
+        createUserInstructions();
+        createGameInfo();
+
+        moveSnake(); // call last
+    };
+
+
 
     /**
 	 * Function that will add points, based on eating different elements
@@ -98,18 +111,6 @@
         speedOnKeyPressed = defaultSpeed + 3;
         virtualDom.setLevelElements();
     }
-
-
-    function init() {
-
-        window.virtualDom = new Dom();
-        
-        createDiv();
-        createUserElements();
-        createUserInstructions();
-        createGameInfo();
-        moveSnake();
-    };
 
 
 
