@@ -2,8 +2,10 @@
     //GLOBAL VARIABLES
     let level = 2;
     let currentPoints = 0;
+    let gameInfoDivWidth = 200;
     let htmlPage = document.querySelector('html');
-    let bodyWidth = htmlPage.scrollWidth;
+    htmlPage.style.width = window.innerWidth - gameInfoDivWidth + 'px';
+    let bodyWidth = htmlPage.scrollWidth - gameInfoDivWidth;
     let bodyHeight = htmlPage.scrollHeight;
     let timeStart = null;
     let timePassed = null;
@@ -70,7 +72,7 @@
     function init() {
 
         window.virtualDom = new Dom();
-        
+
         createDiv();
         createUserElements();
         createUserInstructions();
@@ -88,9 +90,9 @@
     function addPoints(points) {
         currentPoints += points;
 
-        if(levels[level+1]){  //check if there is a next level
-            if(virtualDom.currentLevelElements.length){ //check if there are any elements left to eat
-                if (currentPoints >= levels[level].pointsToLevel) { 
+        if (levels[level + 1]) {  //check if there is a next level
+            if (virtualDom.currentLevelElements.length) { //check if there are any elements left to eat
+                if (currentPoints >= levels[level].pointsToLevel) {
                     nextLevel();
                     return;
                 } else {
@@ -139,8 +141,6 @@
 		 * @param {Number} depth 
 		 */
         _getPageElements(element, depth) { //called for every element
-
-            element.style.pointerEvents = 'none'; //set every elements pointer events to none
             this._sortByDepth(element, depth);
 
             if (element.clientHeight > 0 && element.clientWidth > 0) { //check if element has width or height
@@ -152,7 +152,7 @@
                 else
                     this[elementTag] = [element]; //create array and store elements inside 
 
-                for (var i = 0; i < element.children.length; i++) { //recursive call for each element
+                for (let i = 0; i < element.children.length; i++) { //recursive call for each element
                     element.depth = depth;
                     this._getPageElements(element.children[i], depth + 1);
                 }
@@ -187,11 +187,13 @@
         _sortByNumElements() {
 
             Object.keys(this).forEach(function (key) {
-                if (key != "elementsSortedByNum")
-                    this.elementsSortedByNum.push({
-                        numOfElements: this[key].length,
-                        tagName: key
-                    });
+                if (key != "elementsSortedByNum" && key != 'elementsSortedByDepth' && key != 'currentLevelElements')
+                    this.elementsSortedByNum.push(
+                        {
+                            numOfElements: this[key].length,
+                            tagName: key
+                        }
+                    );
             }.bind(this));
 
             this.elementsSortedByNum.sort(function (a, b) {
@@ -203,10 +205,10 @@
 
         _getArrayOfElements() {
             let arrayWithTagNames = levels[level].food;
-            let array= [];
+            let array = [];
 
-            for(let i=0; i< arrayWithTagNames.length; i++) {
-                if(this[arrayWithTagNames[i]]){
+            for (let i = 0; i < arrayWithTagNames.length; i++) {
+                if (this[arrayWithTagNames[i]]) {
                     array = array.concat(this[arrayWithTagNames[i]]);
                 }
             }
@@ -225,7 +227,7 @@
 
             elements.forEach(function (elem) {
                 let coords = Dom.utilities.getAbsolutePageCoordinates(elem);
-                elem.style.background = 'yellow';
+                elem.style.border = ' 1px solid red';
                 elem.absoluteX = coords.left;
                 elem.absoluteY = coords.top;
                 elem.absoluteRight = coords.width + coords.left;
@@ -301,14 +303,14 @@
         getAbsolutePageCoordinates(elem) {
             let box = elem.getBoundingClientRect();
 
-            return {
-                top: box.top + pageYOffset,
-                left: box.left + pageXOffset,
-                bottom: box.bottom + pageYOffset,
-                right: box.right + pageXOffset,
-                width: box.width,
-                height: box.height
-            };
+                return {
+                    top: box.top + pageYOffset,
+                    left: box.left + pageXOffset,
+                    bottom: box.bottom + pageYOffset,
+                    right: box.right + pageXOffset,
+                    width: box.width,
+                    height: box.height
+                };
         },
 
         getDistanceBetween2Points: function (x1, y1, x2, y2) {
@@ -394,7 +396,7 @@
     // Game Heading and Gameplay Instructions
     function createUserInstructions() {
         let paragraph = document.createElement('p');
-        paragraph.style.width = '180px';
+        paragraph.style.maxWidth = gameInfoDivWidth + 'px';
         paragraph.style.height = 'fit-content';
         paragraph.style.zIndex = '2';
         paragraph.style.position = 'relative';
@@ -422,8 +424,8 @@
         paragraph2.style.marginBottom = '12px';
         paragraph2.setAttribute('id', 'p2');
         document.getElementById('uidiv').appendChild(paragraph2);
-        paragraph2.innerText = 'Current Level: ' + level + '\nPoints: ' + currentPoints +'\nObjective: ' //Add the elements to be eaten according to the level
-        + '\nEaten tags:';
+        paragraph2.innerText = 'Current Level: ' + level + '\nPoints: ' + currentPoints + 
+        '\nElements Left: ' + virtualDom.currentLevelElements.length + '\nTime: ' + parseInt(timePassed / 60) + ':' + timePassed % 60 +'\nEaten tags:';
 
         let paragraph3 = document.createElement('p');
         paragraph3.style.width = 'fit-content';
@@ -439,15 +441,9 @@
 
     }
 
-    function updateGameInfo(element) {
-
-         
-            
-
-        document.getElementById('p2').innerText = 'Current Level: ' + level + '\nPoints: ' + currentPoints +'\nObjective: '
-        + '\nEaten tags:';
-
-        eatenElement(element);
+    function updateGameInfo() {
+        document.getElementById('p2').innerText =  'Current Level: ' + level + '\nPoints: ' + currentPoints + 
+        '\nElements Left: ' + virtualDom.currentLevelElements.length + '\nTime: ' + parseInt(timePassed / 60) + ':' + timePassed % 60 +'\nEaten tags:';
     }
 
     function eatenElement(element) {
@@ -462,11 +458,11 @@
 
     function elementEaten() {
         let array = [];
-          Object.keys(eaten).forEach(function(tag) {
-                array.push('<' + tag + '>: ' + eaten[tag]);
-            });
-            
-            document.getElementById('p3').innerText = array.join('\n');
+        Object.keys(eaten).forEach(function (tag) {
+            array.push('<' + tag + '>: ' + eaten[tag]);
+        });
+
+        document.getElementById('p3').innerText = array.join('\n');
     }
 
 
@@ -474,7 +470,8 @@
     document.addEventListener('keydown', changeDirection);
     document.addEventListener('keyup', decreaseSpeed);
     window.visualViewport.onresize = function () {
-        bodyWidth = htmlPage.scrollWidth;
+        htmlPage.style.width = window.innerWidth - gameInfoDivWidth + 'px';
+        bodyWidth = htmlPage.scrollWidth - gameInfoDivWidth;
         bodyHeight = htmlPage.scrollHeight;
         virtualDom._recalcCurrentLevelElementsPosition();
     }
@@ -509,7 +506,7 @@
             inline: "center"
         });
 
-
+        updateGameInfo();
         checkCollision();
 
 
@@ -555,12 +552,11 @@
                 elem.style.opacity = 0; //opacity 0
 
                 //override the eaten element in the array with the last element and then remove the last element in array
-                virtualDom.currentLevelElements[i] = virtualDom.currentLevelElements[virtualDom.currentLevelElements.length - 1]; 
-                virtualDom.currentLevelElements.pop(); 
+                virtualDom.currentLevelElements[i] = virtualDom.currentLevelElements[virtualDom.currentLevelElements.length - 1];
+                virtualDom.currentLevelElements.pop();
 
                 addPoints(1);
-                updateGameInfo(elem);
-                console.log(currentPoints);
+                eatenElement(elem);
             }
         }
     }
