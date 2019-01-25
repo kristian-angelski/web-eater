@@ -6,7 +6,7 @@
     let htmlPage = document.querySelector('html');
     htmlPage.style.width = window.innerWidth - gameInfoDivWidth + 'px';
     let bodyWidth = htmlPage.scrollWidth - gameInfoDivWidth;
-    let bodyHeight = htmlPage.scrollHeight - gameInfoDivWidth;
+    let bodyHeight = htmlPage.scrollHeight;
     let timeStart = null;
     let timePassed = null;
     let eaten = {};
@@ -471,7 +471,7 @@
     document.addEventListener('keyup', decreaseSpeed);
     window.visualViewport.onresize = function () {
         htmlPage.style.width = window.innerWidth - gameInfoDivWidth + 'px';
-        bodyWidth = htmlPage.scrollWidth;
+        bodyWidth = htmlPage.scrollWidth - gameInfoDivWidth;
         bodyHeight = htmlPage.scrollHeight;
         virtualDom._recalcCurrentLevelElementsPosition();
     }
