@@ -2,13 +2,14 @@
     //GLOBAL VARIABLES
     let level = 2;
     let currentPoints = 0;
+    let pointsPerElement = 20;
     let gameInfoDivWidth = 200;
     let htmlPage = document.querySelector('html');
     htmlPage.style.width = window.innerWidth - gameInfoDivWidth + 'px';
     let bodyWidth = htmlPage.scrollWidth - gameInfoDivWidth;
     let bodyHeight = htmlPage.scrollHeight;
     let timeStart = null;
-    let timePassed = null;
+    let timePassed = null; //later set in seconds
     let eaten = {};
 
 	/**
@@ -90,25 +91,25 @@
     function addPoints(points) {
         currentPoints += points;
 
-        if (levels[level + 1]) {  //check if there is a next level
-            if (virtualDom.currentLevelElements.length) { //check if there are any elements left to eat
+        if (levels[level + 1]) {                                        //check if there is a next level
+            if (virtualDom.currentLevelElements.length) {               //check if there are any elements left to eat
                 if (currentPoints >= levels[level].pointsToLevel) {
                     nextLevel();
                     return;
-                } else {
-                    console.log(`You need ${levels[level].pointsToLevel - currentPoints} more points to level up.`);
                 }
             }
-            else {  //if there is nothing left to eat in currentLevelElements array
+            else {                                                      //if there is nothing left to eat in currentLevelElements array
                 nextLevel();
             }
         }
     }
 
-
+    /**
+     * used in the function addPoints()
+     */
     function nextLevel() {
-        alert(`gz, you are level ${level + 1} now!`);
         level++;
+        alert(`gz, you are level ${level} now!`);
         defaultSpeed = levels[level].speed;
         speedOnKeyPressed = defaultSpeed + 3;
         virtualDom.setLevelElements();
@@ -124,10 +125,10 @@
             this.currentLevelElements = [];
 
             //fills the arrays elementsSortedByDepth and elementsSortedByNum
-            //and sets a property onto Dom for each type of tagName on the page
+            //and sets a property onto the object for each type of tagName on the page
             this._getPageElements(document.body, 0);
             this._sortByNumElements();
-            this.setLevelElements();  //change the level before calling it again
+            this.setLevelElements();
 
             return this;
         }
@@ -140,19 +141,18 @@
 		 * @param {HTMLObjectElement} element 
 		 * @param {Number} depth 
 		 */
-        _getPageElements(element, depth) { //called for every element
+        _getPageElements(element, depth) {                                  //called for every element
+
             this._sortByDepth(element, depth);
 
-            if (element.clientHeight > 0 && element.clientWidth > 0) { //check if element has width or height
-
-                let elementTag = element.tagName.toLowerCase(); //element tagName
-
-                if (this[elementTag]) //if this property exists
-                    this[elementTag].push(element); //push element into it
+            if (element.clientHeight > 0 && element.clientWidth > 0) {      //check if element has width or height
+                let elementTag = element.tagName.toLowerCase();             //element tagName
+                if (this[elementTag])                                       //if this property exists
+                    this[elementTag].push(element);                         //push element into it
                 else
-                    this[elementTag] = [element]; //create array and store elements inside 
+                    this[elementTag] = [element];                           //if it does not exist, create array and store element inside 
 
-                for (let i = 0; i < element.children.length; i++) { //recursive call for each element
+                for (let i = 0; i < element.children.length; i++) {         //recursive call for each element
                     element.depth = depth;
                     this._getPageElements(element.children[i], depth + 1);
                 }
@@ -181,8 +181,8 @@
 
 		/**
 		 * Internal method
-		 * 
-		 * 
+         * 
+		 * Sorts the tagName of elements found on the page by their count
 		 */
         _sortByNumElements() {
 
@@ -203,6 +203,10 @@
         }
 
 
+        /**
+         * Gets the array of elements based on the strings in the levels[level] object
+         * @returns {Array<HTMLElement>} an array of html elements
+         */
         _getArrayOfElements() {
             let arrayWithTagNames = levels[level].food;
             let array = [];
@@ -216,14 +220,15 @@
         }
 
 		/**
-		 * Sets CurrentLevelElements with the given elements
-		 * 
-		 * @param {Array<HTMLElement>} elements 
+         * Calls _getArrayOfElements to get the tagNames of what elements it needs to get.
+         * 
+         * Calculates the absolute coordinates of each element and 
+		 * Sets the property CurrentLevelElements to an array with the given elements
 		 */
-        _setCurrentLevelElements() {
+        setLevelElements() {
             let elements = this._getArrayOfElements();
             let _this = this;
-            this.currentLevelElements = [];
+            //this.currentLevelElements = []; 
 
             elements.forEach(function (elem) {
                 let coords = Dom.utilities.getAbsolutePageCoordinates(elem);
@@ -238,23 +243,14 @@
         }
 
         _recalcCurrentLevelElementsPosition() {
-            this.currentLevelElements.forEach(function (elem) {
 
+            this.currentLevelElements.forEach(function (elem) {
                 let coords = Dom.utilities.getAbsolutePageCoordinates(elem);
                 elem.absoluteX = coords.left;
                 elem.absoluteY = coords.top;
                 elem.absoluteRight = coords.width + coords.left;
                 elem.absoluteBottom = coords.height + coords.top;
             });
-        }
-
-		/**
-		 * 
-		 * @param {Array<HTMLElement>} elements 
-		 */
-        setLevelElements(elements) {
-            this._setCurrentLevelElements(elements);
-            //other stuff to do at the start of each level
         }
 
 
@@ -285,16 +281,9 @@
         getElementsWithMostDepth() {
             return this.elementsSortedByDepth.pop();
         }
-
-        smoothScrollTo(element) {
-            element.scrollIntoView({
-                behavior: "smooth"
-            });
-        }
     }
 
     Dom.utilities = {
-
 
 		/**
 		 * Get the absolute page coordiantes of an element.
@@ -303,14 +292,14 @@
         getAbsolutePageCoordinates(elem) {
             let box = elem.getBoundingClientRect();
 
-                return {
-                    top: box.top + pageYOffset,
-                    left: box.left + pageXOffset,
-                    bottom: box.bottom + pageYOffset,
-                    right: box.right + pageXOffset,
-                    width: box.width,
-                    height: box.height
-                };
+            return {
+                top: box.top + pageYOffset,
+                left: box.left + pageXOffset,
+                bottom: box.bottom + pageYOffset,
+                right: box.right + pageXOffset,
+                width: box.width,
+                height: box.height
+            };
         },
 
         getDistanceBetween2Points: function (x1, y1, x2, y2) {
@@ -404,7 +393,7 @@
         paragraph.style.fontFamily = 'auto';
         paragraph.style.fontSize = 'large';
         paragraph.style.fontWeight = 'bold';
-        paragraph.style.marginBottom = '8px'; 
+        paragraph.style.marginBottom = '8px';
         paragraph.setAttribute('id', 'p1');
         document.getElementById('uidiv').appendChild(paragraph);
         paragraph.innerText = 'Use the arrow keys to move.' + '\nTo win the game, eat all the webpage elements';
@@ -424,8 +413,8 @@
         paragraph2.style.marginBottom = '12px';
         paragraph2.setAttribute('id', 'p2');
         document.getElementById('uidiv').appendChild(paragraph2);
-        paragraph2.innerText = 'Current Level: ' + level + '\nPoints: ' + currentPoints + 
-        '\nElements Left: ' + virtualDom.currentLevelElements.length + '\nTime: 0:00' + '\nEaten tags:';
+        paragraph2.innerText = 'Current Level: ' + level + '\nPoints: ' + currentPoints +
+            '\nElements Left: ' + virtualDom.currentLevelElements.length + '\nTime: 0:00' + '\nEaten tags:';
 
         let paragraph3 = document.createElement('p');
         paragraph3.style.width = 'fit-content';
@@ -441,31 +430,41 @@
 
     }
 
-    function updateGameInfo() {
+    function updateGameInfo(timestamp) {
 
-        let timePlayed = null;
-        if (timePassed % 60 < 10 )
-            timePlayed = parseInt(timePassed / 60) + ':0' + timePassed % 60;
-        else 
-            timePlayed = parseInt(timePassed / 60) + ':' + timePassed % 60;
+        if (!timeStart)
+            timeStart = timestamp;
 
+        let timeElapsed = timestamp - timeStart;                //in milliseconds
+        timePassed = parseInt(timeElapsed / 1000);              //in seconds - GLOBAL VAR
 
-        document.getElementById('p2').innerText =  'Current Level: ' + level + '\nPoints: ' + currentPoints + 
-        '\nElements Left: ' + virtualDom.currentLevelElements.length + '\nTime: ' + timePlayed +'\nEaten tags:';
+        let timeString = null;
+        if (timePassed % 60 < 10)
+            timeString = parseInt(timePassed / 60) + ':0' + timePassed % 60;
+        else
+            timeString = parseInt(timePassed / 60) + ':' + timePassed % 60;
+
+        if (timeElapsed % 1000 < 16.6) { //true ~ 1 time per second
+
+            document.getElementById('p2').innerText = 'Current Level: ' + level + '\nPoints: ' + currentPoints +
+            '\nElements Left: ' + virtualDom.currentLevelElements.length + '\nTime: ' + timeString + '\nEaten tags:';
+        }
     }
 
+
+    /**
+     * 
+     * @param {HTMLElement} element 
+     */
     function eatenElement(element) {
         let tagName = element.tagName.toLowerCase();
+        let array = [];
 
         if (!eaten[tagName]) {
             eaten[tagName] = 0;
         }
         eaten[tagName]++;
-        elementEaten();
-    }
 
-    function elementEaten() {
-        let array = [];
         Object.keys(eaten).forEach(function (tag) {
             array.push('<' + tag + '>: ' + eaten[tag]);
         });
@@ -477,6 +476,7 @@
     // EVENT LISTENERS
     document.addEventListener('keydown', changeDirection);
     document.addEventListener('keyup', decreaseSpeed);
+
     window.visualViewport.onresize = function () {
         htmlPage.style.width = window.innerWidth - gameInfoDivWidth + 'px';
         bodyWidth = htmlPage.scrollWidth - gameInfoDivWidth;
@@ -500,23 +500,16 @@
 
 
 	/**
-	 * The window.requestAnimationFrame() method tells the browser that you wish to perform an animation and requests that the browser call a specified function to update an animation before the next repaint.
+	 * The window.requestAnimationFrame() method tells the browser that you wish to perform an animation and requests that the browser call a specified function to update an animation on the next repaint.
 	 * 
 	 * @param {Number} timestamp - argument of requestAnimationFrame that is automatically passed when the method is called. Similar to performance.now()
 	 */
     function moveSnake(timestamp) {
-        if (!timeStart) timeStart = timestamp;
-        timePassed = parseInt((timestamp - timeStart) / 1000); //in seconds
-        //console.log(timePassed);
 
-        snakeHead.scrollIntoView({  //scroll view around the snake
-            block: "center",
-            inline: "center"
-        });
-
-        updateGameInfo();
+        updateGameInfo(timestamp);
         checkCollision();
 
+        snakeHead.scrollIntoView({ block: "center", inline: "center" });
 
         //define values so we don't have to compute them multiple times.
         //also makes code a bit easier to read.
@@ -525,23 +518,22 @@
         let elemWidth = snakeHead.offsetWidth;
         let elemHeight = snakeHead.offsetHeight;
 
-
-        if (left < 0) { //exits left side
+        if (left < 0) {                                             //exits left side
             snakeHead.leftAbs = (bodyWidth - elemWidth);
-        } else if (top < 0) { // exits top side
+        } else if (top < 0) {                                       // exits top side
             snakeHead.topAbs = (bodyHeight - elemHeight);
-        } else if (left + elemWidth > bodyWidth) { // exits right side
+        } else if (left + elemWidth > bodyWidth) {                  // exits right side
             snakeHead.leftAbs = 0;
-        } else if (top + elemHeight > bodyHeight) { //exits bottom side
+        } else if (top + elemHeight > bodyHeight) {                  //exits bottom side
             snakeHead.topAbs = 0;
         }
-
 
         snakeHead[direction.item + "Abs"] += direction.sign * speed;
         snakeHead.style[direction.item] = snakeHead[direction.item + "Abs"] + 'px'; //set the new position
 
-        window.requestAnimationFrame(moveSnake); //call the fn again
+        window.requestAnimationFrame(moveSnake);                    //call the fn again
     }
+
 
 
 
@@ -563,11 +555,13 @@
                 virtualDom.currentLevelElements[i] = virtualDom.currentLevelElements[virtualDom.currentLevelElements.length - 1];
                 virtualDom.currentLevelElements.pop();
 
-                addPoints(1);
+                addPoints(pointsPerElement);
                 eatenElement(elem);
             }
         }
     }
+
+
     init();
 })();
 
