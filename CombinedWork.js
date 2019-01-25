@@ -420,7 +420,7 @@
         paragraph2.style.textDecoration = 'underline';
         paragraph2.setAttribute('id', 'p2');
         document.getElementById('uidiv').appendChild(paragraph2);
-        paragraph2.innerText = 'Current Level: ' + level + '\nObjective: ' //Add the elements to be eaten according to the level
+        paragraph2.innerText = 'Current Level: ' + level + '\nPoints: ' + currentPoints +'\nObjective: ' //Add the elements to be eaten according to the level
         + '\nEaten tags:';
 
         let paragraph3 = document.createElement('p');
@@ -437,7 +437,16 @@
 
     }
 
-    function eatenElement(tagName) {
+    function updateGameInfo(element) {
+        document.getElementById('p2').innerText = 'Current Level: ' + level + '\nPoints: ' + currentPoints +'\nObjective: ' //Add the elements to be eaten according to the level
+        + '\nEaten tags:';
+
+        eatenElement(element);
+    }
+
+    function eatenElement(element) {
+        let tagName = element.tagName.toLowerCase();
+
         if (!eaten[tagName]) {
             eaten[tagName] = 0;
         }
@@ -538,13 +547,13 @@
                 elem.absoluteBottom > snakeHead.topAbs) {
 
                 elem.style.opacity = 0; //opacity 0
-                eatenElement(elem.tagName.toLowerCase());
 
                 //override the eaten element in the array with the last element and then remove the last element in array
                 virtualDom.currentLevelElements[i] = virtualDom.currentLevelElements[virtualDom.currentLevelElements.length - 1]; 
                 virtualDom.currentLevelElements.pop(); 
 
                 addPoints(1);
+                updateGameInfo(elem);
                 console.log(currentPoints);
             }
         }
