@@ -1,5 +1,4 @@
 (function SnakeGame() {
-	let bodyWidth = htmlPage.scrollWidth;
     //GLOBAL VARIABLES
     let level = 2;
     let currentPoints = 0;
