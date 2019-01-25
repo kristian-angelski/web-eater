@@ -402,6 +402,7 @@
         paragraph.style.fontFamily = 'auto';
         paragraph.style.fontSize = 'large';
         paragraph.style.fontWeight = 'bold';
+        paragraph.style.marginBottom = '8px'; 
         paragraph.setAttribute('id', 'p1');
         document.getElementById('uidiv').appendChild(paragraph);
         paragraph.innerText = 'Use the arrow keys to move.' + '\nTo win the game, eat all the webpage elements';
@@ -418,6 +419,7 @@
         paragraph2.style.fontSize = 'large';
         paragraph2.style.fontWeight = 'bold';
         paragraph2.style.textDecoration = 'underline';
+        paragraph2.style.marginBottom = '12px';
         paragraph2.setAttribute('id', 'p2');
         document.getElementById('uidiv').appendChild(paragraph2);
         paragraph2.innerText = 'Current Level: ' + level + '\nPoints: ' + currentPoints +'\nObjective: ' //Add the elements to be eaten according to the level
@@ -438,7 +440,11 @@
     }
 
     function updateGameInfo(element) {
-        document.getElementById('p2').innerText = 'Current Level: ' + level + '\nPoints: ' + currentPoints +'\nObjective: ' //Add the elements to be eaten according to the level
+
+         
+            
+
+        document.getElementById('p2').innerText = 'Current Level: ' + level + '\nPoints: ' + currentPoints +'\nObjective: '
         + '\nEaten tags:';
 
         eatenElement(element);
