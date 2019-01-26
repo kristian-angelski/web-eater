@@ -137,10 +137,7 @@
 
             this.snakeBody[0].left = this.snakeHeadDOM.left;
             this.snakeBody[0].top = this.snakeHeadDOM.top;
-
-
             this.snakeHeadDOM[direction.item] += direction.sign * speed;
-            this.snakeHeadDOM.style[direction.item] = this.snakeHeadDOM[direction.item] + gameConstants.sizeDimension;
 
             if (this.snakeHeadDOM.left < 0) {
                 this.snakeHeadDOM.left = bodyWidth - gameConstants.snakeBodySize;
@@ -162,6 +159,7 @@
 
                 element.style.left = element.left + gameConstants.sizeDimension;
                 element.style.top = element.top + gameConstants.sizeDimension;
+                this.snakeHeadDOM.style[direction.item] = this.snakeHeadDOM[direction.item] + gameConstants.sizeDimension;
             }
         }
 
