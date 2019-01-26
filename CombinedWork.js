@@ -1,5 +1,7 @@
 (function SnakeGame() {
     //GLOBAL VARIABLES
+    let snake = null;
+    let DOMElements = null;
     let level = 2;
     let currentPoints = 0;
     let pointsPerElement = 10;
@@ -49,38 +51,14 @@
     let speedOnKeyPressed = levels[level].speed + 2;
 
     const directions = {
-        39: {
-            item: 'left',
-            sign: 1
-        }, //right
-        37: {
-            item: 'left',
-            sign: -1
-        }, //left
-        40: {
-            item: 'top',
-            sign: 1
-        }, //down
-        38: {
-            item: 'top',
-            sign: -1
-        }, //up
-        68: {
-            item: 'left',
-            sign: 1
-        }, //right
-        65: {
-            item: 'left',
-            sign: -1
-        }, //left
-        83: {
-            item: 'top',
-            sign: 1
-        }, //down
-        87: {
-            item: 'top',
-            sign: -1
-        }, //up
+        39: {item: 'left', sign: 1},    //right
+        68: {item: 'left', sign: 1},    //right - D
+        37: {item: 'left', sign: -1},   //left
+        65: {item: 'left', sign: -1},   //left - A
+        40: {item: 'top', sign: 1},     //down
+        83: {item: 'top', sign: 1},     //down - S
+        38: {item: 'top', sign: -1},    //up
+        87: {item: 'top', sign: -1},    //up - W
     }
     let direction = directions['39'];
 
@@ -90,11 +68,13 @@
     };
 
 
-
+    /**
+     * Called once to initialize the game
+     */
     function init() {
 
-       window.virtualDom = new Dom();  //refactor it so that ideally variables aren't attached to the window
-       window.snake = new Snake();
+        DOMElements = new Dom();
+        snake = new Snake();
 
         createDiv();
         createUserElements();
@@ -115,8 +95,8 @@
         constructor() {
             this.snakeBody = [];
             this.snakeHeadDOM = this.createSnakeHead();
-            
-            for(let i=0; i < 10; i+=1)
+
+            for (let i = 0; i < 10; i += 1)
                 this.addBody();
         }
 
@@ -127,7 +107,7 @@
             snakeItem.style.width = gameConstants.snakeBodySize + gameConstants.sizeDimension;
             snakeItem.style.height = gameConstants.snakeBodySize + gameConstants.sizeDimension;
             snakeItem.style.position = 'absolute';
-            snakeItem.style.borderRadius = '100px';
+            snakeItem.style.borderRadius = 100 + gameConstants.sizeDimension;
             snakeItem.style.background = 'green';
             snakeItem.style.zIndex = '999999';
             snakeItem.style.left = 0 + gameConstants.sizeDimension;
@@ -137,10 +117,10 @@
             document.body.appendChild(snakeItem);
             return snakeItem;
         }
-        
+
         createSnakeHead() {
             let snakePart = this.createSnakeBody();
-            snakePart.id = 'snake'; 
+            snakePart.id = 'snake';
             snakePart.style.background = 'black';
             snakePart.style.zIndex = '1000000';
             return snakePart;
@@ -152,9 +132,9 @@
             snake.snakeHeadDOM.scrollIntoView({ block: "center", inline: "center" });
 
             let snakeLength = this.snakeBody.length;
-            for(let i = snakeLength-1; i !== 0; i-=1){
-                this.snakeBody[i].left = this.snakeBody[i-1].left;
-                this.snakeBody[i].top = this.snakeBody[i-1].top;
+            for (let i = snakeLength - 1; i !== 0; i -= 1) {
+                this.snakeBody[i].left = this.snakeBody[i - 1].left;
+                this.snakeBody[i].top = this.snakeBody[i - 1].top;
             }
 
             this.snakeBody[0].left = this.snakeHeadDOM.left;
@@ -162,7 +142,7 @@
 
 
             this.snakeHeadDOM[direction.item] += direction.sign * speed;
-            this.snakeHeadDOM.style[direction.item] = this.snakeHeadDOM[direction.item] + 'px';
+            this.snakeHeadDOM.style[direction.item] = this.snakeHeadDOM[direction.item] + gameConstants.sizeDimension;
 
             if (this.snakeHeadDOM.left < 0) {
                 this.snakeHeadDOM.left = bodyWidth - gameConstants.snakeBodySize;
@@ -176,14 +156,14 @@
         }
 
         addBody() {
-            this.snakeBody.push( this.createSnakeBody() );
+            this.snakeBody.push(this.createSnakeBody());
         }
 
         draw() {
             for (let element of snake.snakeBody) {
-    
+
                 element.style.left = element.left + gameConstants.sizeDimension;
-                element.style.top = element.top + gameConstants.sizeDimension; 
+                element.style.top = element.top + gameConstants.sizeDimension;
             }
         }
 
@@ -191,22 +171,22 @@
 
         checkCollision() {
 
-            for (let i = 0; i < virtualDom.currentLevelElements.length; i++) { //check all elements
-    
-                let elem = virtualDom.currentLevelElements[i];
-    
+            for (let i = 0; i < DOMElements.currentLevelElements.length; i++) { //check all elements
+
+                let elem = DOMElements.currentLevelElements[i];
+
                 //if collision
                 if (elem.absoluteX < this.snakeHeadDOM.left + gameConstants.snakeBodySize &&
                     elem.absoluteRight > this.snakeHeadDOM.left &&
                     elem.absoluteY < this.snakeHeadDOM.top + gameConstants.snakeBodySize &&
                     elem.absoluteBottom > this.snakeHeadDOM.top) {
-    
+
                     elem.style.opacity = 0; //opacity 0
-    
+
                     //override the eaten element in the array with the last element and then remove the last element in array
-                    virtualDom.currentLevelElements[i] = virtualDom.currentLevelElements[virtualDom.currentLevelElements.length - 1];
-                    virtualDom.currentLevelElements.pop();
-    
+                    DOMElements.currentLevelElements[i] = DOMElements.currentLevelElements[DOMElements.currentLevelElements.length - 1];
+                    DOMElements.currentLevelElements.pop();
+
                     addPoints(pointsPerElement);
                     eatenElement(elem);
                 }
@@ -225,7 +205,7 @@
         currentPoints += points;
 
         if (levels[level + 1]) {                                        //check if there is a next level
-            if (virtualDom.currentLevelElements.length) {               //check if there are any elements left to eat
+            if (DOMElements.currentLevelElements.length) {               //check if there are any elements left to eat
                 if (currentPoints >= levels[level].pointsToLevel) {
                     nextLevel();
                 }
@@ -244,7 +224,7 @@
         alert(`gz, you are level ${level} now!`);
         defaultSpeed = levels[level].speed;
         speedOnKeyPressed = defaultSpeed + 3;
-        virtualDom.setLevelElements();
+        DOMElements.setLevelElements();
     }
 
 
@@ -514,7 +494,7 @@
         paragraph2.setAttribute('id', 'p2');
         document.getElementById('uidiv').appendChild(paragraph2);
         paragraph2.innerText = 'Current Level: ' + level + '\nPoints: ' + currentPoints +
-            '\nElements Left: ' + virtualDom.currentLevelElements.length + '\nTime: 0:00' + '\nEaten tags:';
+            '\nElements Left: ' + DOMElements.currentLevelElements.length + '\nTime: 0:00' + '\nEaten tags:';
 
         let paragraph3 = document.createElement('p');
         paragraph3.style.width = 'fit-content';
@@ -547,7 +527,7 @@
         if (timeElapsed % 1000 < 16.6) { //true ~ 1 time per second
 
             document.getElementById('p2').innerText = 'Current Level: ' + level + '\nPoints: ' + currentPoints +
-                '\nElements Left: ' + virtualDom.currentLevelElements.length + '\nTime: ' + timeString + '\nEaten tags:';
+                '\nElements Left: ' + DOMElements.currentLevelElements.length + '\nTime: ' + timeString + '\nEaten tags:';
         }
     }
 
@@ -578,10 +558,11 @@
     document.addEventListener('keyup', decreaseSpeed);
 
     window.visualViewport.onresize = function () {
+        debugger;
         htmlPage.style.width = window.innerWidth - gameInfoDivWidth + 'px';
         bodyWidth = htmlPage.scrollWidth - gameInfoDivWidth;
         bodyHeight = htmlPage.scrollHeight;
-        virtualDom._recalcCurrentLevelElementsPosition();
+        DOMElements._recalcCurrentLevelElementsPosition();
     }
 
     function changeDirection(event) {
@@ -607,8 +588,8 @@
     function moveSnake(timestamp) {
 
         updateGameInfo(timestamp);
-        snake.checkCollision();
         snake.move();
+        snake.checkCollision();
         snake.draw();
 
         window.requestAnimationFrame(moveSnake);                    //call the fn again
