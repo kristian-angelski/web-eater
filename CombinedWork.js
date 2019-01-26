@@ -60,11 +60,27 @@
         40: {
             item: 'top',
             sign: 1
-        }, //top
+        }, //down
         38: {
             item: 'top',
             sign: -1
-        }, //bottom
+        }, //up
+        68: {
+            item: 'left',
+            sign: 1
+        }, //right
+        65: {
+            item: 'left',
+            sign: -1
+        }, //left
+        83: {
+            item: 'top',
+            sign: 1
+        }, //down
+        87: {
+            item: 'top',
+            sign: -1
+        }, //up
     }
     let direction = directions['39'];
 
