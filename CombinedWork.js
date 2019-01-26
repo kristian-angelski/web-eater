@@ -218,11 +218,14 @@
      * used in the function addPoints()
      */
     function nextLevel() {
+        debugger;
         level++;
         alert(`gz, you are level ${level} now!`);
         defaultSpeed = levels[level].speed;
         speedOnKeyPressed = defaultSpeed + 3;
         DOMElements.setLevelElements();
+        if(DOMElements.currentLevelElements.length===0) //check if there are any elements of this type on the page, if not, go to next level. Otherwise you're stuck on a level you can never eat anything.
+            nextLevel();
     }
 
 
@@ -256,11 +259,11 @@
             this._sortByDepth(element, depth);
             this._setElementAbsoluteCoords(element);
 
-            if (element.clientHeight > 0 && element.clientWidth > 0 &&      //check if element is visible on the page
+            if (element.clientHeight > 0 && element.clientWidth > 0  &&      //check if element is visible on the page
                 element.absoluteX < bodyWidth &&
                 element.absoluteRight > 0 &&
                 element.absoluteY < bodyHeight &&
-                element.absoluteBottom > 0) {
+                element.absoluteBottom > 0 ) {
 
                 let elementTag = element.tagName.toLowerCase();             //element tagName
                 if (this[elementTag])                                       //if this property exists
@@ -358,6 +361,8 @@
                 elem.style.border = ' 1px solid red';
                 _this.currentLevelElements.push(elem);
             });
+
+            this._recalcCurrentLevelElementsPosition();
         }
 
         _recalcCurrentLevelElementsPosition() {
