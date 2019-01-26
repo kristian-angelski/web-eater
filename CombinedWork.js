@@ -5,10 +5,8 @@
     let level = 2;
     let currentPoints = 0;
     let pointsPerElement = 10;
-    let gameInfoDivWidth = 200;
     let htmlPage = document.querySelector('html');
-    htmlPage.style.width = window.innerWidth - gameInfoDivWidth + 'px';
-    let bodyWidth = htmlPage.scrollWidth - gameInfoDivWidth;
+    let bodyWidth = htmlPage.scrollWidth;
     let bodyHeight = htmlPage.scrollHeight;
     let timeStart = null;
     let timePassed = null; //later set in seconds
@@ -51,14 +49,14 @@
     let speedOnKeyPressed = levels[level].speed + 2;
 
     const directions = {
-        39: {item: 'left', sign: 1},    //right
-        68: {item: 'left', sign: 1},    //right - D
-        37: {item: 'left', sign: -1},   //left
-        65: {item: 'left', sign: -1},   //left - A
-        40: {item: 'top', sign: 1},     //down
-        83: {item: 'top', sign: 1},     //down - S
-        38: {item: 'top', sign: -1},    //up
-        87: {item: 'top', sign: -1},    //up - W
+        39: { item: 'left', sign: 1 },    //right
+        68: { item: 'left', sign: 1 },    //right - D
+        37: { item: 'left', sign: -1 },   //left
+        65: { item: 'left', sign: -1 },   //left - A
+        40: { item: 'top', sign: 1 },     //down
+        83: { item: 'top', sign: 1 },     //down - S
+        38: { item: 'top', sign: -1 },    //up
+        87: { item: 'top', sign: -1 },    //up - W
     }
     let direction = directions['39'];
 
@@ -256,8 +254,14 @@
         _getPageElements(element, depth) {                                  //called for every element
 
             this._sortByDepth(element, depth);
+            this._setElementAbsoluteCoords(element);
 
-            if (element.clientHeight > 0 && element.clientWidth > 0) {      //check if element has width or height
+            if (element.clientHeight > 0 && element.clientWidth > 0 &&      //check if element is visible on the page
+                element.absoluteX < bodyWidth &&
+                element.absoluteRight > 0 &&
+                element.absoluteY < bodyHeight &&
+                element.absoluteBottom > 0) {
+
                 let elementTag = element.tagName.toLowerCase();             //element tagName
                 if (this[elementTag])                                       //if this property exists
                     this[elementTag].push(element);                         //push element into it
@@ -331,6 +335,14 @@
             return array;
         }
 
+        _setElementAbsoluteCoords(elem) {
+            let coords = Dom.utilities.getAbsolutePageCoordinates(elem);
+            elem.absoluteX = coords.left;
+            elem.absoluteY = coords.top;
+            elem.absoluteRight = coords.width + coords.left;
+            elem.absoluteBottom = coords.height + coords.top;
+        }
+
 		/**
          * Calls _getArrayOfElements to get the tagNames of what elements it needs to get.
          * 
@@ -343,13 +355,7 @@
             //this.currentLevelElements = []; 
 
             elements.forEach(function (elem) {
-                let coords = Dom.utilities.getAbsolutePageCoordinates(elem);
                 elem.style.border = ' 1px solid red';
-                elem.absoluteX = coords.left;
-                elem.absoluteY = coords.top;
-                elem.absoluteRight = coords.width + coords.left;
-                elem.absoluteBottom = coords.height + coords.top;
-
                 _this.currentLevelElements.push(elem);
             });
         }
@@ -465,7 +471,7 @@
     // Game Heading and Gameplay Instructions
     function createUserInstructions() {
         let paragraph = document.createElement('p');
-        paragraph.style.maxWidth = gameInfoDivWidth + 'px';
+        paragraph.style.maxWidth = 200 + 'px';
         paragraph.style.height = 'fit-content';
         paragraph.style.zIndex = '2';
         paragraph.style.position = 'relative';
@@ -558,9 +564,7 @@
     document.addEventListener('keyup', decreaseSpeed);
 
     window.visualViewport.onresize = function () {
-        debugger;
-        htmlPage.style.width = window.innerWidth - gameInfoDivWidth + 'px';
-        bodyWidth = htmlPage.scrollWidth - gameInfoDivWidth;
+        bodyWidth = htmlPage.scrollWidth;
         bodyHeight = htmlPage.scrollHeight;
         DOMElements._recalcCurrentLevelElementsPosition();
     }
