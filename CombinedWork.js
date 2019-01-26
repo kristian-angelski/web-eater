@@ -218,7 +218,6 @@
      * used in the function addPoints()
      */
     function nextLevel() {
-        debugger;
         level++;
         alert(`gz, you are level ${level} now!`);
         defaultSpeed = levels[level].speed;
