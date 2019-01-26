@@ -2,7 +2,7 @@
     //GLOBAL VARIABLES
     let level = 2;
     let currentPoints = 0;
-    let pointsPerElement = 20;
+    let pointsPerElement = 10;
     let gameInfoDivWidth = 200;
     let htmlPage = document.querySelector('html');
     htmlPage.style.width = window.innerWidth - gameInfoDivWidth + 'px';
@@ -46,7 +46,7 @@
 
     let defaultSpeed = levels[level].speed;
     let speed = defaultSpeed;
-    let speedOnKeyPressed = levels[level].speed + 3;
+    let speedOnKeyPressed = levels[level].speed + 2;
 
     const directions = {
         39: {
@@ -67,12 +67,18 @@
         }, //bottom
     }
     let direction = directions['39'];
-    let snake = [];
+
+    const gameConstants = {
+        snakeBodySize: 25,
+        sizeDimension: 'px'
+    };
+
 
 
     function init() {
 
-        window.virtualDom = new Dom();
+       window.virtualDom = new Dom();  //refactor it so that ideally variables aren't attached to the window
+       window.snake = new Snake();
 
         createDiv();
         createUserElements();
@@ -81,6 +87,117 @@
 
         moveSnake(); // call last
     };
+
+
+
+
+
+
+
+    class Snake {
+
+        constructor() {
+            this.snakeBody = [];
+            this.snakeHeadDOM = this.createSnakeHead();
+            
+            for(let i=0; i < 10; i+=1)
+                this.addBody();
+        }
+
+
+
+        createSnakeBody() {
+            let snakeItem = document.createElement('div');
+            snakeItem.style.width = gameConstants.snakeBodySize + gameConstants.sizeDimension;
+            snakeItem.style.height = gameConstants.snakeBodySize + gameConstants.sizeDimension;
+            snakeItem.style.position = 'absolute';
+            snakeItem.style.borderRadius = '100px';
+            snakeItem.style.background = 'green';
+            snakeItem.style.zIndex = '999999';
+            snakeItem.style.left = 0 + gameConstants.sizeDimension;
+            snakeItem.style.top = 0 + gameConstants.sizeDimension;
+            snakeItem.left = 0;
+            snakeItem.top = 0;
+            document.body.appendChild(snakeItem);
+            return snakeItem;
+        }
+        
+        createSnakeHead() {
+            let snakePart = this.createSnakeBody();
+            snakePart.id = 'snake'; 
+            snakePart.style.background = 'black';
+            snakePart.style.zIndex = '1000000';
+            return snakePart;
+        }
+
+
+        move() {
+
+            snake.snakeHeadDOM.scrollIntoView({ block: "center", inline: "center" });
+
+            let snakeLength = this.snakeBody.length;
+            for(let i = snakeLength-1; i !== 0; i-=1){
+                this.snakeBody[i].left = this.snakeBody[i-1].left;
+                this.snakeBody[i].top = this.snakeBody[i-1].top;
+            }
+
+            this.snakeBody[0].left = this.snakeHeadDOM.left;
+            this.snakeBody[0].top = this.snakeHeadDOM.top;
+
+
+            this.snakeHeadDOM[direction.item] += direction.sign * speed;
+            this.snakeHeadDOM.style[direction.item] = this.snakeHeadDOM[direction.item] + 'px';
+
+            if (this.snakeHeadDOM.left < 0) {
+                this.snakeHeadDOM.left = bodyWidth - gameConstants.snakeBodySize;
+            } else if (this.snakeHeadDOM.top < 0) {
+                this.snakeHeadDOM.top = bodyHeight - gameConstants.snakeBodySize;
+            } else if (this.snakeHeadDOM.left + gameConstants.snakeBodySize > bodyWidth) {
+                this.snakeHeadDOM.left = 0;
+            } else if (this.snakeHeadDOM.top + gameConstants.snakeBodySize > bodyHeight) {
+                this.snakeHeadDOM.top = 0;
+            }
+        }
+
+        addBody() {
+            this.snakeBody.push( this.createSnakeBody() );
+        }
+
+        draw() {
+            for (let element of snake.snakeBody) {
+    
+                element.style.left = element.left + gameConstants.sizeDimension;
+                element.style.top = element.top + gameConstants.sizeDimension; 
+            }
+        }
+
+
+
+        checkCollision() {
+
+            for (let i = 0; i < virtualDom.currentLevelElements.length; i++) { //check all elements
+    
+                let elem = virtualDom.currentLevelElements[i];
+    
+                //if collision
+                if (elem.absoluteX < this.snakeHeadDOM.left + gameConstants.snakeBodySize &&
+                    elem.absoluteRight > this.snakeHeadDOM.left &&
+                    elem.absoluteY < this.snakeHeadDOM.top + gameConstants.snakeBodySize &&
+                    elem.absoluteBottom > this.snakeHeadDOM.top) {
+    
+                    elem.style.opacity = 0; //opacity 0
+    
+                    //override the eaten element in the array with the last element and then remove the last element in array
+                    virtualDom.currentLevelElements[i] = virtualDom.currentLevelElements[virtualDom.currentLevelElements.length - 1];
+                    virtualDom.currentLevelElements.pop();
+    
+                    addPoints(pointsPerElement);
+                    eatenElement(elem);
+                }
+            }
+        }
+
+    }
 
 
 
@@ -95,7 +212,6 @@
             if (virtualDom.currentLevelElements.length) {               //check if there are any elements left to eat
                 if (currentPoints >= levels[level].pointsToLevel) {
                     nextLevel();
-                    return;
                 }
             }
             else {                                                      //if there is nothing left to eat in currentLevelElements array
@@ -328,48 +444,16 @@
         let div = document.createElement('div');
         div.style.width = '100%';
         div.style.height = '100%';
-        div.style.background = 'rgba(255, 255, 255, .3)'; //set opacity 
+        div.style.background = 'rgba(255, 255, 255, .15)'; //set opacity 
         div.style.color = 'white';
         div.style.position = 'fixed';
         div.style.top = '0';
+        div.style.left = '0';
         div.setAttribute('id', 'Div1');
         div.style.zIndex = '10000000000000';
-        document.body.id = 'body';
-        document.getElementById('body').appendChild(div);
-        snake.push(div);
-        snake.push(div);
-        snake.push(div);
-        snakeDot();
+        document.body.appendChild(div);
     }
 
-	/**
-	 * Creates the Snake and appends it to <body>
-	 */
-    function snakeDot() {
-        let snake = document.createElement('div');
-        snake.setAttribute('id', 'snake');
-        snake.style.border = '1px solid black';
-        snake.style.borderRadius = '100px';
-        snake.style.left = '20px'; //start position
-        snake.style.top = '550px';
-        snake.style.width = '30px';
-        snake.style.height = '30px'
-        snake.style.background = 'black';
-        snake.style.position = 'absolute';
-        snake.style.zIndex = '10000000000000';
-        document.getElementById('body').appendChild(snake);
-
-        window.snakeHead = document.getElementById('snake');
-        snakeHead.leftAbs = parseInt(snakeHead.style.left);
-        snakeHead.topAbs = parseInt(snakeHead.style.top);
-
-        snakeHead.rightAbs = function () {
-            return snakeHead.absLeft + snakeHead.offsetWidth;
-        };
-        snakeHead.bottomAbs = function () {
-            return snakeHead.absTop + snakeHead.offsetHeight;
-        };
-    }
 
     function createUserElements() {
         let divElement = document.createElement('div');
@@ -447,7 +531,7 @@
         if (timeElapsed % 1000 < 16.6) { //true ~ 1 time per second
 
             document.getElementById('p2').innerText = 'Current Level: ' + level + '\nPoints: ' + currentPoints +
-            '\nElements Left: ' + virtualDom.currentLevelElements.length + '\nTime: ' + timeString + '\nEaten tags:';
+                '\nElements Left: ' + virtualDom.currentLevelElements.length + '\nTime: ' + timeString + '\nEaten tags:';
         }
     }
 
@@ -507,58 +591,11 @@
     function moveSnake(timestamp) {
 
         updateGameInfo(timestamp);
-        checkCollision();
-
-        snakeHead.scrollIntoView({ block: "center", inline: "center" });
-
-        //define values so we don't have to compute them multiple times.
-        //also makes code a bit easier to read.
-        let left = snakeHead.leftAbs;
-        let top = snakeHead.topAbs;
-        let elemWidth = snakeHead.offsetWidth;
-        let elemHeight = snakeHead.offsetHeight;
-
-        if (left < 0) {                                             //exits left side
-            snakeHead.leftAbs = (bodyWidth - elemWidth);
-        } else if (top < 0) {                                       // exits top side
-            snakeHead.topAbs = (bodyHeight - elemHeight);
-        } else if (left + elemWidth > bodyWidth) {                  // exits right side
-            snakeHead.leftAbs = 0;
-        } else if (top + elemHeight > bodyHeight) {                  //exits bottom side
-            snakeHead.topAbs = 0;
-        }
-
-        snakeHead[direction.item + "Abs"] += direction.sign * speed;
-        snakeHead.style[direction.item] = snakeHead[direction.item + "Abs"] + 'px'; //set the new position
+        snake.checkCollision();
+        snake.move();
+        snake.draw();
 
         window.requestAnimationFrame(moveSnake);                    //call the fn again
-    }
-
-
-
-
-    function checkCollision(timestamp) {
-
-        for (let i = 0; i < virtualDom.currentLevelElements.length; i++) { //check all elements
-
-            let elem = virtualDom.currentLevelElements[i];
-
-            //if collision
-            if (elem.absoluteX < snakeHead.leftAbs + snakeHead.clientWidth &&
-                elem.absoluteRight > snakeHead.leftAbs &&
-                elem.absoluteY < snakeHead.topAbs + snakeHead.clientHeight &&
-                elem.absoluteBottom > snakeHead.topAbs) {
-
-                elem.style.opacity = 0; //opacity 0
-
-                //override the eaten element in the array with the last element and then remove the last element in array
-                virtualDom.currentLevelElements[i] = virtualDom.currentLevelElements[virtualDom.currentLevelElements.length - 1];
-                virtualDom.currentLevelElements.pop();
-
-                addPoints(pointsPerElement);
-                eatenElement(elem);
-            }
-        }
     }
 
 
