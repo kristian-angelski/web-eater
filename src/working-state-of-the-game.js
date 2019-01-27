@@ -3,7 +3,7 @@ const gameConstants = {
 	maxPageHeight: document.body.scrollHeight,
 	snakeBodySize: 20,
 	sizeDimension: 'px'
-};
+}; //declaring all the game parameters needed
 
 const directions = {
 	'right': {
@@ -22,7 +22,7 @@ const directions = {
 		item: 'top',
 		inputMapping: [38]
 	},
-}
+}// directions and their key mappings
 
 class Snake {
 	constructor(maxWidthUnits, maxHeightUnits) {
@@ -34,8 +34,8 @@ class Snake {
 			y: 0,
 		};
 		this.snakeHeadDOM = createSnakeHead();
-		this.direction = directions.right;
-		this.addBody();
+		this.direction = directions.right; // default direction on start
+		this.addBody(); //calls up the snake to be with 3 dots
 		this.addBody();
 		this.addBody();
 	}
@@ -126,21 +126,21 @@ function createSnakeHead() {
 	return snakePart;
 }
 
-// //create div to disable all background elements
-// function createDiv() {
-//     let div = document.createElement('div');
-//     div.style.width = '100%';
-//     div.style.height = '100%';
-//     div.style.background = 'rgba(255, 255, 255, .4)';
-//     div.style.color = 'white';
-//     div.style.position = 'fixed';
-//     div.style.top = '0';
-//     div.style.opacity = '0.2';
-//     div.setAttribute('id', 'Div1');
-//     div.style.zIndex = '10000000000000';
-//     document.body.id = 'body';
-//     document.getElementById('body').appendChild(div);
-// }
+//create div to disable all background elements
+function createDiv() {
+    let div = document.createElement('div');
+    div.style.width = '100%';
+    div.style.height = '100%';
+    div.style.background = 'rgba(255, 255, 255, .4)';
+    div.style.color = 'white';
+    div.style.position = 'fixed';
+    div.style.top = '0';
+    div.style.opacity = '0.2';
+    div.setAttribute('id', 'Div1');
+    div.style.zIndex = '10000000000000';
+    document.body.id = 'body';
+    document.getElementById('body').appendChild(div);
+}
 
 
 let maxWidthUnits = Math.floor(gameConstants.maxPageWidth / gameConstants.snakeBodySize);
@@ -161,4 +161,4 @@ document.addEventListener('keydown', (event) => {
 setInterval(() => {
 	snake.move();
 	draw(snake);
-}, 100)
+}, 100) // calls every 0.1 seconds snake.m
