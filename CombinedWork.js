@@ -33,24 +33,24 @@
             speed: 5
         },
         4: {
-            food: ['noscript', 'hr',  'dl', 'h4', 'h5', 'h6'],
+            food: ['noscript', 'hr', 'dl', 'h4', 'h5', 'h6'],
             pointsToLevel: 2000,
             speed: 6
         },
         5: {
             food: ['p', 'h1', 'h2', 'h3', 'ol', 'ul', 'pre', 'address', 'blockquote'],
             pointsToLevel: 3000,
-            speed:6
+            speed: 7
         },
         6: {
             food: ['table', 'form', 'fieldset'],
             pointsToLevel: 4000,
-            speed: 6
+            speed: 7
         },
         7: {
             food: ['div'],
             pointsToLevel: 5000,
-            speed: 6
+            speed: 7
         }
     }
 
@@ -95,6 +95,8 @@
         createUserInstructions();
         createGameInfo();
         snake.moveSnake(); // call last
+        console.log(levels);
+
     };
 
 
@@ -470,9 +472,9 @@
 
 
     function calcPointsForLevels() {
-        levels[1].pointsToLevel = DOMElements.currentLevelElements.length * pointsPerElement /2;
-        for(let i=2; i < Object.keys(levels).length+1; i+=1) {
-            levels[i].pointsToLevel = levels[i-1].pointsToLevel + 2000;
+        levels[1].pointsToLevel = DOMElements.currentLevelElements.length * pointsPerElement / 2;
+        for (let i = 2; i < Object.keys(levels).length + 1; i += 1) {
+            levels[i].pointsToLevel = levels[i - 1].pointsToLevel + 1000;
         }
     }
 
@@ -623,7 +625,6 @@
         }
     }
 
-
     function getTextCoordinates() {
 
         let allTags = document.body.querySelectorAll('*'),
@@ -691,11 +692,9 @@
 
                                 for (let j = 0; j < currElLength; j += 1) {
 
-                                    if(currentEl[j] !== ' ') {
                                     let textTag = document.createElement('text');
                                     textTag.innerHTML = currentEl[j];
                                     currentElArr.push(textTag.outerHTML);
-                                    }
 
                                 }
 
