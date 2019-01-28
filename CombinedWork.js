@@ -33,14 +33,24 @@
             speed: 5
         },
         4: {
-            food: ['table', 'noscript', 'hr', 'form', 'fieldset', 'div', 'dl', 'h4', 'h5', 'h6'],
+            food: ['noscript', 'hr',  'dl', 'h4', 'h5', 'h6'],
             pointsToLevel: 2000,
             speed: 6
         },
         5: {
             food: ['p', 'h1', 'h2', 'h3', 'ol', 'ul', 'pre', 'address', 'blockquote'],
             pointsToLevel: 3000,
-            speed: 6
+            speed:7
+        },
+        6: {
+            food: ['table', 'form', 'fieldset'],
+            pointsToLevel: 4000,
+            speed: 7
+        },
+        7: {
+            food: ['div'],
+            pointsToLevel: 5000,
+            speed: 7
         }
     }
 
@@ -77,6 +87,7 @@
         getTextCoordinates();
 
         DOMElements = new Dom();
+        calcPointsForLevels();
         snake = new Snake();
 
         createDiv();
@@ -84,6 +95,8 @@
         createUserInstructions();
         createGameInfo();
         snake.moveSnake(); // call last
+        console.log(levels);
+      
     };
 
 
@@ -458,6 +471,13 @@
     }
 
 
+    function calcPointsForLevels() {
+        levels[1].pointsToLevel = DOMElements.currentLevelElements.length * pointsPerElement /2;
+        for(let i=2; i < Object.keys(levels).length+1; i+=1) {
+            levels[i].pointsToLevel = levels[i-1].pointsToLevel + 1000;
+        }
+    }
+
 
     /**
      * Creates a div element that is appended to <body> 
@@ -610,9 +630,6 @@
 
         let allTags = document.body.querySelectorAll('*'),
             allValidTags = [],
-            allTextTagsLocations = [],
-            allFoundSymbols,
-            elementLocation,
             tagLen,
             tagSymbolsArr,
             tagSymbolsString,
@@ -704,25 +721,6 @@
                 }
             }
         }
-        allFoundSymbols = document.body.querySelectorAll('text');
-
-        for (let i of allFoundSymbols) {
-            //get symbol coordinates and push them into allTextTagsLocations array
-            elementLocation = i.getBoundingClientRect();
-
-            if (elementLocation.x !== 0 && elementLocation.y !== 0) {
-                allTextTagsLocations.push({ element: i, x: elementLocation.x, y: elementLocation.y });
-            }
-        }
-
-        console.log(allTextTagsLocations);
-        levels[1].pointsToLevel = allFoundSymbols.length * pointsPerElement/ 2;
-        levels[2].pointsToLevel = levels[1].pointsToLevel + 1000;
-        levels[3].pointsToLevel = levels[2].pointsToLevel + 1000;
-        levels[4].pointsToLevel = levels[3].pointsToLevel + 1000;
-        levels[5].pointsToLevel = levels[4].pointsToLevel + 1000;
-
-        return allTextTagsLocations;
     }
 
 
