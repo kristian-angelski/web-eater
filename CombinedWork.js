@@ -12,10 +12,10 @@
     let timePassed = null; //later set in seconds
     let eaten = {};
 
-	/**
-	 * Levels - containing different points required for a level up
-	 * and each level's different foods
-	 */
+    /**
+     * Levels - containing different points required for a level up
+     * and each level's different foods
+     */
     const levels = {
         1: {
             food: ['text'],
@@ -61,7 +61,7 @@
     let direction = directions['39'];
 
     const gameConstants = {
-        snakeBodySize: 25,
+        snakeBodySize: 20,
         sizeDimension: 'px'
     };
 
@@ -78,12 +78,11 @@
 
         DOMElements = new Dom();
         snake = new Snake();
-    
+
         createDiv();
         createUserElements();
         createUserInstructions();
         createGameInfo();
-
         snake.moveSnake(); // call last
     };
 
@@ -233,7 +232,7 @@
 		 * @param {Number} depth 
 		 */
         _getPageElements(element, depth) {                                  //called for every element
- 
+
             this._sortByDepth(element, depth);
             this._setElementAbsoluteCoords(element);
 
@@ -259,12 +258,12 @@
         }
 
 
-		/**
-		 * Internal method
-		 * 
-		 * @param {HTMLObjectElement} element 
-		 * @param {Number} depth 
-		 */
+        /**
+         * Internal method
+         * 
+         * @param {HTMLObjectElement} element 
+         * @param {Number} depth 
+         */
         _sortByDepth(element, depth) {
             if (this.elementsSortedByDepth[depth])
                 this.elementsSortedByDepth[depth].push(element);
@@ -334,10 +333,17 @@
             let _this = this;
             //this.currentLevelElements = []; 
 
-            elements.forEach(function (elem) {
-                elem.style.border = ' 1px solid red';
-                _this.currentLevelElements.push(elem);
-            });
+            if (level === 1) {                      // if level 1 (text elements)   -- dont set a border around the letters
+                elements.forEach(function (elem) {
+                    _this.currentLevelElements.push(elem);
+                });
+            }
+            else {                                          // else set border around the elements
+                elements.forEach(function (elem) {
+                    elem.style.border = ' 1px solid red';
+                    _this.currentLevelElements.push(elem);
+                });
+            }
 
             this._recalcCurrentLevelElementsPosition();
         }
@@ -354,26 +360,26 @@
         }
 
 
-		/**
-		 * 
-		 * @param {String} name 
-		 * @returns {Array<HTMLElement>} this[name]
-		 */
+        /**
+         * 
+         * @param {String} name 
+         * @returns {Array<HTMLElement>} this[name]
+         */
         getElementsByTagName(name) {
             return this[name];
         }
 
-		/**
-		 * Returns and removes the array containing the elements with the highest count
-		 * @returns {Array<HTMLElement>} E.g. returns all div elements if div is the highest encountered element tag
-		 */
+        /**
+         * Returns and removes the array containing the elements with the highest count
+         * @returns {Array<HTMLElement>} E.g. returns all div elements if div is the highest encountered element tag
+         */
         getElementsWithHighestCount() {
             return this[this.elementsSortedByNum.pop().tagName];
         }
 
-		/**
-		 * @returns {Array<HTMLElement>} E.g. returns all div elements if div is the lowest encountered element tag
-		 */
+        /**
+         * @returns {Array<HTMLElement>} E.g. returns all div elements if div is the lowest encountered element tag
+         */
         getElementsWithLowestCount() {
             return this[this.elementsSortedByNum.shift().tagName];
         }
@@ -453,10 +459,10 @@
 
 
 
-	/**
-	 * Creates a div element that is appended to <body> 
-	 * This div acts as a layer on top of the <body>
-	 */
+    /**
+     * Creates a div element that is appended to <body> 
+     * This div acts as a layer on top of the <body>
+     */
     function createDiv() {
         let div = document.createElement('div');
         div.style.width = '100%';
@@ -480,6 +486,10 @@
         divElement.style.right = '0px';
         divElement.style.top = '90px';
         divElement.style.zIndex = '100';
+        divElement.style.backgroundColor = 'black';
+        divElement.style.padding = '10px';
+        divElement.style.marginRight = '10px';
+        divElement.style.opacity = '0.7';
         divElement.setAttribute('id', 'uidiv');
         document.body.appendChild(divElement);
     }
@@ -490,14 +500,15 @@
         paragraph.style.height = 'fit-content';
         paragraph.style.zIndex = '2';
         paragraph.style.position = 'relative';
-        paragraph.style.color = 'darkcyan';
+        paragraph.style.color = 'white';
         paragraph.style.fontFamily = 'auto';
         paragraph.style.fontSize = 'large';
         paragraph.style.fontWeight = 'bold';
-        paragraph.style.marginBottom = '8px';
+        paragraph.style.textDecoration = 'underline';
+        paragraph.style.marginBottom = '5px';
         paragraph.setAttribute('id', 'p1');
         document.getElementById('uidiv').appendChild(paragraph);
-        paragraph.innerText = 'Use the arrow keys to move.' + '\nTo win the game, eat all the webpage elements';
+        paragraph.innerText = 'Use the arrow keys to move.' + '\nTo win the game eat all the webpage elements';
     }
 
     function createGameInfo() {
@@ -506,12 +517,11 @@
         paragraph2.style.height = 'fit-content';
         paragraph2.style.zIndex = '2';
         paragraph2.style.position = 'relative';
-        paragraph2.style.color = 'darkcyan';
+        paragraph2.style.color = 'white';
         paragraph2.style.fontFamily = 'Comic Sans MS';
         paragraph2.style.fontSize = 'large';
         paragraph2.style.fontWeight = 'bold';
-        paragraph2.style.textDecoration = 'underline';
-        paragraph2.style.marginBottom = '12px';
+        paragraph2.style.marginBottom = '5px';
         paragraph2.setAttribute('id', 'p2');
         document.getElementById('uidiv').appendChild(paragraph2);
         paragraph2.innerText = 'Current Level: ' + level + '\nPoints: ' + currentPoints +
@@ -522,13 +532,11 @@
         paragraph3.style.height = 'fit-content';
         paragraph3.style.zIndex = '2';
         paragraph3.style.position = 'relative';
-        paragraph3.style.color = 'darkcyan';
+        paragraph3.style.color = 'white';
         paragraph3.style.fontFamily = 'auto';
         paragraph3.style.fontSize = 'large';
-        paragraph3.style.fontWeight = 'bold';
         paragraph3.setAttribute('id', 'p3');
         document.getElementById('uidiv').appendChild(paragraph3);
-
     }
 
     function updateGameInfo(timestamp) {
@@ -609,44 +617,44 @@
             tagSymbolsArr,
             tagSymbolsString,
             tagText;
-    
+
         for (let tag of allTags) {
             if (tag.innerText !== '' && tag.tagName !== 'SCRIPT' && tag.tagName !== 'SVG' && tag.tagName !== 'STYLE') {
                 allValidTags.push(tag);
             }
         }
-    
+
         for (let tag of allValidTags) {
-    
+
             if (tag.innerText) {
                 tagText = tag.innerText;
                 tagLen = tagText.length;
-    
+
                 //In case that it's tag that contains only text
                 if (tag.childNodes.length == 1 && tag.childNodes[0].nodeType === 3) {
-    
+
                     //make an array from the tag
                     tagSymbolsArr = tagText.split('');
-    
+
                     //put every symbol in <text></text>
                     for (let i = 0; i < tagLen; i += 1) {
-    
+
                         let textTag = document.createElement('text');
                         textTag.innerText = tagSymbolsArr[i];
                         tagSymbolsArr[i] = textTag.outerHTML;
-    
+
                     }
-    
+
                     //transform tagSymbolsArr into string
                     tagSymbolsString = tagSymbolsArr.join('');
-    
+
                     //change HTML tag content with newly created content
                     tag.innerHTML = tagSymbolsString;
-    
+
                 } else {
                     //check if the tagText is not empty
                     if (!/^\s+$/.test(tagText)) {
-    
+
                         let parentTag = tag.childNodes,
                             parentTagLength = parentTag.length,
                             nextSib,
@@ -655,32 +663,32 @@
                             currElLength,
                             currentElArr = [],
                             currentElString = '';
-    
+
                         //console.log(parentTag);
-    
+
                         for (let i = 0; i < parentTagLength; i += 1) {
-    
+
                             //check if typeof childnode is text
                             if (parentTag[i].nodeType === 3) {
-    
+
                                 currentEl = parentTag[i].nodeValue.trim();
                                 currElLength = currentEl.length;
-    
+
                                 for (let j = 0; j < currElLength; j += 1) {
-    
+
                                     let textTag = document.createElement('text');
                                     textTag.innerHTML = currentEl[j];
                                     currentElArr.push(textTag.outerHTML);
-    
+
                                 }
-    
+
                                 currentElString = currentElArr.join('');
                                 currentElArr = [];
-    
+
                                 //push all changed symbols in onе texttext tag
                                 let textTextTag = document.createElement('textText');
-                                textTextTag.innerHTML =  currentElString;
-    
+                                textTextTag.innerHTML = currentElString;
+
                                 if (parentTag[i] === parentTag[i].parentNode.lastChild) {
                                     prevSib = parentTag[i].previousSibling;
                                     prevSib.parentNode.removeChild(prevSib.parentNode.lastChild);
@@ -697,23 +705,23 @@
             }
         }
         allFoundSymbols = document.body.querySelectorAll('text');
-    
+
         for (let i of allFoundSymbols) {
             //get symbol coordinates and push them into allTextTagsLocations array
             elementLocation = i.getBoundingClientRect();
-    
+
             if (elementLocation.x !== 0 && elementLocation.y !== 0) {
                 allTextTagsLocations.push({ element: i, x: elementLocation.x, y: elementLocation.y });
             }
         }
-        
+
         console.log(allTextTagsLocations);
-        levels[1].pointsToLevel = allFoundSymbols.length/2;
+        levels[1].pointsToLevel = allFoundSymbols.length * pointsPerElement/ 2;
         levels[2].pointsToLevel = levels[1].pointsToLevel + 1000;
         levels[3].pointsToLevel = levels[2].pointsToLevel + 1000;
         levels[4].pointsToLevel = levels[3].pointsToLevel + 1000;
         levels[5].pointsToLevel = levels[4].pointsToLevel + 1000;
-    
+
         return allTextTagsLocations;
     }
 
