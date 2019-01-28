@@ -693,9 +693,11 @@
 
                                 for (let j = 0; j < currElLength; j += 1) {
 
+                                    if(currentEl[j] !== ' ') {
                                     let textTag = document.createElement('text');
                                     textTag.innerHTML = currentEl[j];
                                     currentElArr.push(textTag.outerHTML);
+                                    }
 
                                 }
 
