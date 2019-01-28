@@ -11,6 +11,7 @@
     let timeStart = null;
     let timePassed = null; //later set in seconds
     let eaten = {};
+    let frame = 0;
 
     /**
      * Levels - containing different points required for a level up
@@ -54,8 +55,13 @@
         }
     }
 
+    const gameConstants = {
+        snakeBodySize: 20,
+        sizeDimension: 'px'
+    };
+
     let defaultSpeed = levels[level].speed;
-    let speed = defaultSpeed;
+    let speed = gameConstants.snakeBodySize; //defaultSpeed;
     let speedOnKeyPressed = levels[level].speed + 2;
 
     const directions = {
@@ -69,12 +75,6 @@
         87: { item: 'top', sign: -1 },    //up - W
     }
     let direction = directions['39'];
-
-    const gameConstants = {
-        snakeBodySize: 20,
-        sizeDimension: 'px'
-    };
-
 
 
 
@@ -208,10 +208,15 @@
          */
         moveSnake(timestamp) {
 
+            frame+=1;
             updateGameInfo(timestamp);
+            if(frame === 3) {
+                    frame = 0;
+
             snake.calcNewCoordinates();
             snake.checkCollision();
             snake.draw();
+            }
 
             window.requestAnimationFrame(this.moveSnake.bind(this));    //call the fn again
         }
@@ -612,14 +617,14 @@
 
     function changeDirection(event) {
         if (Object.keys(directions).indexOf(String(event.keyCode)) != -1) {
-            speed = speedOnKeyPressed;
+            //speed = speedOnKeyPressed;
             direction = directions[event.keyCode];
         }
     }
 
     function decreaseSpeed() {
         if (Object.keys(directions).indexOf(String(event.keyCode)) != -1) {
-            speed = defaultSpeed;
+            //speed = defaultSpeed;
         }
     }
 
