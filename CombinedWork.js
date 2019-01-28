@@ -472,7 +472,7 @@
     function calcPointsForLevels() {
         levels[1].pointsToLevel = DOMElements.currentLevelElements.length * pointsPerElement /2;
         for(let i=2; i < Object.keys(levels).length+1; i+=1) {
-            levels[i].pointsToLevel = levels[i-1].pointsToLevel + 1000;
+            levels[i].pointsToLevel = levels[i-1].pointsToLevel + 2000;
         }
     }
 
