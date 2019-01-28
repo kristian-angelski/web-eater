@@ -1,10 +1,12 @@
 (function SnakeGame() {
     //GLOBAL VARIABLES
+    let symbols = null;
+    
     let snake = null;
     let DOMElements = null;
-    let level = 2;
+    let level = 1;
     let currentPoints = 0;
-    let pointsPerElement = 10;
+    let pointsPerElement = 5;
     let htmlPage = document.querySelector('html');
     let bodyWidth = htmlPage.scrollWidth;
     let bodyHeight = htmlPage.scrollHeight;
@@ -18,28 +20,28 @@
 	 */
     const levels = {
         1: {
-            food: ['symbols', 'coordsOfSymbols'],
-            pointsToLevel: 200,
+            food: ['text'],
+            pointsToLevel: 600,
             speed: 3,
         },
         2: {
             food: ['b', 'big', 'i', 'small', 'tt', 'a', 'bdo', 'br', 'img', 'map', 'object', 'q', 'span', 'sub', 'sup'],
-            pointsToLevel: 600,
+            pointsToLevel: 1200,
             speed: 4
         },
         3: {
             food: ['abbr', 'acronym', 'cite', 'code', 'dfn', 'em', 'kbd', 'strong', 'samp', 'var', 'button', 'input', 'label', 'select', 'textarea'],
-            pointsToLevel: 1000,
+            pointsToLevel: 1600,
             speed: 5
         },
         4: {
             food: ['table', 'noscript', 'hr', 'form', 'fieldset', 'div', 'dl', 'h4', 'h5', 'h6'],
-            pointsToLevel: 1600,
+            pointsToLevel: 2000,
             speed: 6
         },
         5: {
             food: ['p', 'h1', 'h2', 'h3', 'ol', 'ul', 'pre', 'address', 'blockquote'],
-            pointsToLevel: 2000,
+            pointsToLevel: 3000,
             speed: 6
         }
     }
@@ -74,9 +76,11 @@
      */
     function init() {
 
+        getTextCoordinates();
+
         DOMElements = new Dom();
         snake = new Snake();
-
+    
         createDiv();
         createUserElements();
         createUserInstructions();
@@ -84,8 +88,6 @@
 
         snake.moveSnake(); // call last
     };
-
-
 
 
 
@@ -191,7 +193,6 @@
         }
 
 
-
         /**
          * The window.requestAnimationFrame() method tells the browser that you wish to perform an animation and requests that the browser call a specified function to update an animation on the next repaint.
          * 
@@ -207,7 +208,6 @@
             window.requestAnimationFrame(this.moveSnake.bind(this));    //call the fn again
         }
     }
-
 
 
     class Dom {
@@ -235,11 +235,11 @@
 		 * @param {Number} depth 
 		 */
         _getPageElements(element, depth) {                                  //called for every element
-
+ 
             this._sortByDepth(element, depth);
             this._setElementAbsoluteCoords(element);
 
-            if (element.clientHeight > 0 && element.clientWidth > 0 &&      //check if element is visible on the page
+            if (/* element.clientHeight > 0 && element.clientWidth > 0 &&   */    //check if element is visible on the page
                 element.absoluteX < bodyWidth &&
                 element.absoluteRight > 0 &&
                 element.absoluteY < bodyHeight &&
@@ -275,7 +275,6 @@
 
             return this;
         }
-
 
 
 		/**
@@ -600,6 +599,126 @@
         }
     }
 
+
+    function getTextCoordinates() {
+
+        let allTags = document.body.querySelectorAll('*'),
+            allValidTags = [],
+            allTextTagsLocations = [],
+            allFoundSymbols,
+            elementLocation,
+            tagLen,
+            tagSymbolsArr,
+            tagSymbolsString,
+            tagText;
+    
+        for (let tag of allTags) {
+            if (tag.innerText !== '' && tag.tagName !== 'SCRIPT' && tag.tagName !== 'SVG' && tag.tagName !== 'STYLE') {
+                allValidTags.push(tag);
+            }
+        }
+    
+        for (let tag of allValidTags) {
+    
+            if (tag.innerText) {
+                tagText = tag.innerText;
+                tagLen = tagText.length;
+    
+                //In case that it's tag that contains only text
+                if (tag.childNodes.length == 1 && tag.childNodes[0].nodeType === 3) {
+    
+                    //make an array from the tag
+                    tagSymbolsArr = tagText.split('');
+    
+                    //put every symbol in <text></text>
+                    for (let i = 0; i < tagLen; i += 1) {
+    
+                        let textTag = document.createElement('text');
+                        textTag.innerText = tagSymbolsArr[i];
+                        tagSymbolsArr[i] = textTag.outerHTML;
+    
+                    }
+    
+                    //transform tagSymbolsArr into string
+                    tagSymbolsString = tagSymbolsArr.join('');
+    
+                    //change HTML tag content with newly created content
+                    tag.innerHTML = tagSymbolsString;
+    
+                } else {
+                    //check if the tagText is not empty
+                    if (!/^\s+$/.test(tagText)) {
+    
+                        let parentTag = tag.childNodes,
+                            parentTagLength = parentTag.length,
+                            nextSib,
+                            prevSib,
+                            currentEl,
+                            currElLength,
+                            currentElArr = [],
+                            currentElString = '';
+    
+                        //console.log(parentTag);
+    
+                        for (let i = 0; i < parentTagLength; i += 1) {
+    
+                            //check if typeof childnode is text
+                            if (parentTag[i].nodeType === 3) {
+    
+                                currentEl = parentTag[i].nodeValue.trim();
+                                currElLength = currentEl.length;
+    
+                                for (let j = 0; j < currElLength; j += 1) {
+    
+                                    let textTag = document.createElement('text');
+                                    textTag.innerHTML = currentEl[j];
+                                    currentElArr.push(textTag.outerHTML);
+    
+                                }
+    
+                                currentElString = currentElArr.join('');
+                                currentElArr = [];
+    
+                                //push all changed symbols in onе texttext tag
+                                let textTextTag = document.createElement('textText');
+                                textTextTag.innerHTML =  currentElString;
+    
+                                if (parentTag[i] === parentTag[i].parentNode.lastChild) {
+                                    prevSib = parentTag[i].previousSibling;
+                                    prevSib.parentNode.removeChild(prevSib.parentNode.lastChild);
+                                    prevSib.parentNode.appendChild(textTextTag);
+                                } else {
+                                    nextSib = parentTag[i].nextSibling;
+                                    parentTag[i].parentNode.removeChild(nextSib.previousSibling);
+                                    nextSib.parentNode.insertBefore(textTextTag, nextSib);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        allFoundSymbols = document.body.querySelectorAll('text');
+    
+        for (let i of allFoundSymbols) {
+            //get symbol coordinates and push them into allTextTagsLocations array
+            elementLocation = i.getBoundingClientRect();
+    
+            if (elementLocation.x !== 0 && elementLocation.y !== 0) {
+                allTextTagsLocations.push({ element: i, x: elementLocation.x, y: elementLocation.y });
+            }
+        }
+        
+        console.log(allTextTagsLocations);
+        levels[1].pointsToLevel = allFoundSymbols.length/2;
+        levels[2].pointsToLevel = levels[1].pointsToLevel + 1000;
+        levels[3].pointsToLevel = levels[2].pointsToLevel + 1000;
+        levels[4].pointsToLevel = levels[3].pointsToLevel + 1000;
+        levels[5].pointsToLevel = levels[4].pointsToLevel + 1000;
+    
+        return allTextTagsLocations;
+    }
+
+
     init();
 })();
-
