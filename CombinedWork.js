@@ -1,7 +1,5 @@
 (function SnakeGame() {
     //GLOBAL VARIABLES
-    let symbols = null;
-    
     let snake = null;
     let DOMElements = null;
     let level = 1;
