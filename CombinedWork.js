@@ -124,6 +124,7 @@
             snakeItem.style.top = 0 + gameConstants.sizeDimension;
             snakeItem.left = 0;
             snakeItem.top = 0;
+            snakeItem.direction = direction;
             document.body.appendChild(snakeItem);
             return snakeItem;
         }
@@ -142,14 +143,21 @@
             snake.snakeHeadDOM.scrollIntoView({ block: "center", inline: "center" });
 
             let snakeLength = this.snakeBody.length;
+            debugger;
             for (let i = snakeLength - 1; i !== 0; i -= 1) {
-                this.snakeBody[i].left = this.snakeBody[i - 1].left;
-                this.snakeBody[i].top = this.snakeBody[i - 1].top;
+                let nextSnakePart = this.snakeBody[i-1];
+
+                this.snakeBody[i][nextSnakePart.direction.item] = nextSnakePart[nextSnakePart.direction.item];
+                this.snakeBody[i].direction = nextSnakePart.direction;
+                //this.snakeBody[i].left = this.snakeBody[i - 1].left;
+                //this.snakeBody[i].top = this.snakeBody[i - 1].top;
             }
 
-            this.snakeBody[0].left = this.snakeHeadDOM.left;
-            this.snakeBody[0].top = this.snakeHeadDOM.top;
+            this.snakeBody[0][this.snakeHeadDOM.direction.item] = this.snakeHeadDOM[this.snakeHeadDOM.direction.item];
+            this.snakeBody[0].direction = this.snakeHeadDOM.direction;
+            //this.snakeBody[0].top = this.snakeHeadDOM.top;
             this.snakeHeadDOM[direction.item] += direction.sign * speed;
+            this.snakeHeadDOM.direction = direction;
 
             if (this.snakeHeadDOM.left < 0) {
                 this.snakeHeadDOM.left = bodyWidth - gameConstants.snakeBodySize;
@@ -211,7 +219,7 @@
             frame+=1;
             updateGameInfo(timestamp);
             if(frame === 3) {
-                    frame = 0;
+                frame = 0;
 
             snake.calcNewCoordinates();
             snake.checkCollision();
@@ -475,7 +483,7 @@
 
 
     function calcPointsForLevels() {
-        levels[1].pointsToLevel = DOMElements.currentLevelElements.length * pointsPerElement /2;
+        levels[1].pointsToLevel = DOMElements.currentLevelElements.length * pointsPerElement /2;   //50% of chars
         for(let i=2; i < Object.keys(levels).length+1; i+=1) {
             levels[i].pointsToLevel = levels[i-1].pointsToLevel + 2000;
         }
