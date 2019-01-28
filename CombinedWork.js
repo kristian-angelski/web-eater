@@ -40,17 +40,17 @@
         5: {
             food: ['p', 'h1', 'h2', 'h3', 'ol', 'ul', 'pre', 'address', 'blockquote'],
             pointsToLevel: 3000,
-            speed:7
+            speed:6
         },
         6: {
             food: ['table', 'form', 'fieldset'],
             pointsToLevel: 4000,
-            speed: 7
+            speed: 6
         },
         7: {
             food: ['div'],
             pointsToLevel: 5000,
-            speed: 7
+            speed: 6
         }
     }
 
