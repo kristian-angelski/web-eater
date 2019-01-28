@@ -66,6 +66,9 @@
     };
 
 
+
+
+
     /**
      * Called once to initialize the game
      */
@@ -79,7 +82,7 @@
         createUserInstructions();
         createGameInfo();
 
-        moveSnake(); // call last
+        snake.moveSnake(); // call last
     };
 
 
@@ -97,7 +100,6 @@
             for (let i = 0; i < 10; i += 1)
                 this.addBody();
         }
-
 
 
         createSnakeBody() {
@@ -125,7 +127,7 @@
         }
 
 
-        move() {
+        calcNewCoordinates() {
 
             snake.snakeHeadDOM.scrollIntoView({ block: "center", inline: "center" });
 
@@ -164,7 +166,6 @@
         }
 
 
-
         checkCollision() {
 
             for (let i = 0; i < DOMElements.currentLevelElements.length; i++) { //check all elements
@@ -189,40 +190,22 @@
             }
         }
 
-    }
 
 
+        /**
+         * The window.requestAnimationFrame() method tells the browser that you wish to perform an animation and requests that the browser call a specified function to update an animation on the next repaint.
+         * 
+         * @param {Number} timestamp - argument of requestAnimationFrame that is automatically passed when the method is called. Similar to performance.now()
+         */
+        moveSnake(timestamp) {
 
-    /**
-	 * Function that will add points, based on eating different elements
-	 * @param {Number} points
-	 */
-    function addPoints(points) {
-        currentPoints += points;
+            updateGameInfo(timestamp);
+            snake.calcNewCoordinates();
+            snake.checkCollision();
+            snake.draw();
 
-        if (levels[level + 1]) {                                        //check if there is a next level
-            if (DOMElements.currentLevelElements.length) {               //check if there are any elements left to eat
-                if (currentPoints >= levels[level].pointsToLevel) {
-                    nextLevel();
-                }
-            }
-            else {                                                      //if there is nothing left to eat in currentLevelElements array
-                nextLevel();
-            }
+            window.requestAnimationFrame(this.moveSnake.bind(this));    //call the fn again
         }
-    }
-
-    /**
-     * used in the function addPoints()
-     */
-    function nextLevel() {
-        level++;
-        alert(`gz, you are level ${level} now!`);
-        defaultSpeed = levels[level].speed;
-        speedOnKeyPressed = defaultSpeed + 3;
-        DOMElements.setLevelElements();
-        if(DOMElements.currentLevelElements.length===0) //check if there are any elements of this type on the page, if not, go to next level. Otherwise you're stuck on a level you can never eat anything.
-            nextLevel();
     }
 
 
@@ -256,11 +239,11 @@
             this._sortByDepth(element, depth);
             this._setElementAbsoluteCoords(element);
 
-            if (element.clientHeight > 0 && element.clientWidth > 0  &&      //check if element is visible on the page
+            if (element.clientHeight > 0 && element.clientWidth > 0 &&      //check if element is visible on the page
                 element.absoluteX < bodyWidth &&
                 element.absoluteRight > 0 &&
                 element.absoluteY < bodyHeight &&
-                element.absoluteBottom > 0 ) {
+                element.absoluteBottom > 0) {
 
                 let elementTag = element.tagName.toLowerCase();             //element tagName
                 if (this[elementTag])                                       //if this property exists
@@ -439,6 +422,39 @@
 
 
 
+    /**
+	 * Function that will add points, based on eating different elements
+	 * @param {Number} points
+	 */
+    function addPoints(points) {
+        currentPoints += points;
+
+        if (levels[level + 1]) {                                        //check if there is a next level
+            if (DOMElements.currentLevelElements.length) {               //check if there are any elements left to eat
+                if (currentPoints >= levels[level].pointsToLevel) {
+                    nextLevel();
+                }
+            }
+            else {                                                      //if there is nothing left to eat in currentLevelElements array
+                nextLevel();
+            }
+        }
+    }
+
+    /**
+     * used in the function addPoints()
+     */
+    function nextLevel() {
+        level++;
+        alert(`gz, you are level ${level} now!`);
+        defaultSpeed = levels[level].speed;
+        speedOnKeyPressed = defaultSpeed + 3;
+        DOMElements.setLevelElements();
+        if (DOMElements.currentLevelElements.length === 0) //check if there are any elements of this type on the page, if not, go to next level. Otherwise you're stuck on a level you can never eat anything.
+            nextLevel();
+    }
+
+
 
 	/**
 	 * Creates a div element that is appended to <body> 
@@ -583,24 +599,6 @@
             speed = defaultSpeed;
         }
     }
-
-
-
-	/**
-	 * The window.requestAnimationFrame() method tells the browser that you wish to perform an animation and requests that the browser call a specified function to update an animation on the next repaint.
-	 * 
-	 * @param {Number} timestamp - argument of requestAnimationFrame that is automatically passed when the method is called. Similar to performance.now()
-	 */
-    function moveSnake(timestamp) {
-
-        updateGameInfo(timestamp);
-        snake.move();
-        snake.checkCollision();
-        snake.draw();
-
-        window.requestAnimationFrame(moveSnake);                    //call the fn again
-    }
-
 
     init();
 })();
