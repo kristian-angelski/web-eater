@@ -91,11 +91,10 @@
             this.defaultFramesPerSecond = 20;
             this.framesPerSecond = this.defaultFramesPerSecond;
             this.frameCounter = 1;
+            this.speedMultiplier = 1;
             this.snakeBodyCounter = 10;
-            this.snakeMultiplier = 1.3;
 
-            for (let i = 0; i < this.snakeBodyCounter; i += 1)
-                this.addBody();
+            this.addBody(this.snakeBodyCounter);
         }
 
 
@@ -153,8 +152,12 @@
             }
         }
 
-        addBody() {
-            this.snakeBody.push(this.createSnakeBody());
+        addBody(num) {
+
+            for (let i = 0; i < num; i += 1){
+                this.snakeBody.push(this.createSnakeBody());
+                this.snakeBodyCounter++;
+            }
         }
 
         draw() {
@@ -329,6 +332,29 @@
             elem.absoluteBottom = coords.height + coords.top;
         }
 
+
+        _setFixedElementAbsoluteCoords(elem) {
+            let coords = elem.getBoundingClientRect();
+
+            if (coords.top < window.visualViewport.height/2) {
+                elem.absoluteY = coords.top;
+                elem.absoluteBottom = coords.bottom;
+            }
+            else {
+                elem.absoluteY =  pageYOffset + coords.top;
+                elem.absoluteBottom = pageYOffset + coords.bottom;
+            }
+
+            if (coords.left < window.visualViewport.width/2) {
+                elem.absoluteX = coords.left;
+                elem.absoluteRight = coords.right;
+            }
+            else {
+                elem.absoluteX = pageXOffset + coords.left;
+                elem.absoluteRight= pageXOffset + coords.right
+            }
+        }
+
 		/**
          * Calls _getArrayOfElements to get the tagNames of what elements it needs to get.
          * 
@@ -457,6 +483,7 @@
     function nextLevel() {
         level++;
         alert(`gz, you are level ${level} now!`);
+        snake.addBody(3);
         DOMElements.setLevelElements();
         if (DOMElements.currentLevelElements.length === 0) //check if there are any elements of this type on the page, if not, go to next level. Otherwise you're stuck on a level you can never eat anything.
             nextLevel();
