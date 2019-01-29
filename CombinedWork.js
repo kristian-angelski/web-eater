@@ -22,7 +22,7 @@
             pointsToLevel: 600,
         },
         2: {
-            food: ['b', 'big', 'i', 'small', 'tt', 'a', 'bdo', 'br', 'img', 'map', 'object', 'q', 'span', 'sub', 'sup'],
+            food: ['b', 'texttext', 'big', 'i', 'small', 'tt', 'a', 'bdo', 'br', 'img', 'map', 'object', 'q', 'span', 'sub', 'sup'],
             pointsToLevel: 1200,
         },
         3: {
@@ -30,11 +30,11 @@
             pointsToLevel: 1600,
         },
         4: {
-            food: ['noscript', 'hr', 'dl', 'h4', 'h5', 'h6'],
+            food: ['noscript','p', 'hr', 'dl', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
             pointsToLevel: 2000,
         },
         5: {
-            food: ['p', 'h1', 'h2', 'h3', 'ol', 'ul', 'pre', 'address', 'blockquote'],
+            food: [ 'ol', 'ul', 'pre', 'address', 'blockquote'],
             pointsToLevel: 3000,
         },
         6: {
@@ -97,11 +97,11 @@
         constructor() {
             this.snakeBody = [];
             this.snakeHeadDOM = this.createSnakeHead();
-            this.defaultFramesPerSecond = 20;
+            this.defaultFramesPerSecond = 10;
             this.framesPerSecond = this.defaultFramesPerSecond;
             this.frameCounter = 1;
             this.snakeBodyCounter = 10;
-            this.snakeMultiplier = 1.3;
+            this.snakeMultiplier = 1;
 
             for (let i = 0; i < this.snakeBodyCounter; i += 1)
                 this.addBody();
@@ -188,14 +188,16 @@
                     elem.absoluteY < this.snakeHeadDOM.top + gameConstants.snakeBodySize &&
                     elem.absoluteBottom > this.snakeHeadDOM.top) {
 
-                    elem.style.opacity = 0; //opacity 0
+                        if(DOMElements.canBeEaten(elem)) {
+                            elem.style.opacity = 0; //opacity 0
 
-                    //override the eaten element in the array with the last element and then remove the last element in array
-                    DOMElements.currentLevelElements[i] = DOMElements.currentLevelElements[DOMElements.currentLevelElements.length - 1];
-                    DOMElements.currentLevelElements.pop();
-
-                    addPoints(pointsPerElement);
-                    eatenElement(elem);
+                            //override the eaten element in the array with the last element and then remove the last element in array
+                            DOMElements.currentLevelElements[i] = DOMElements.currentLevelElements[DOMElements.currentLevelElements.length - 1];
+                            DOMElements.currentLevelElements.pop();
+                            elem.classList.add('eaten');
+                            addPoints(pointsPerElement);
+                            eatenElement(elem);
+                        }
                 }
             }
         }
@@ -269,8 +271,20 @@
                     this._getPageElements(element.children[i], depth + 1);
                 }
             }
+            else {
+                element.classList.add('eaten');
+            }
 
             return this;
+        }
+
+        canBeEaten(element) {
+            for(let i=0; i<element.children.length; i+=1) {
+                if(!element.children[i].classList.contains('eaten')) {
+                    return false;
+                }
+            }
+            return true;
         }
 
 
@@ -464,6 +478,7 @@
      * used in the function addPoints()
      */
     function nextLevel() {
+        
         level++;
         alert(`gz, you are level ${level} now!`);
         DOMElements.setLevelElements();
