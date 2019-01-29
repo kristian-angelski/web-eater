@@ -88,7 +88,7 @@
         constructor() {
             this.snakeBody = [];
             this.snakeHeadDOM = this.createSnakeHead();
-            this.defaultFramesPerSecond = 20;
+            this.defaultFramesPerSecond = 10;
             this.framesPerSecond = this.defaultFramesPerSecond;
             this.frameCounter = 1;
             this.speedMultiplier = 1;
@@ -182,14 +182,16 @@
                     elem.absoluteY < this.snakeHeadDOM.top + gameConstants.snakeBodySize &&
                     elem.absoluteBottom > this.snakeHeadDOM.top) {
 
-                    elem.style.opacity = 0; //opacity 0
+                        if(DOMElements.canBeEaten(elem)) {
+                            elem.style.opacity = 0; //opacity 0
 
-                    //override the eaten element in the array with the last element and then remove the last element in array
-                    DOMElements.currentLevelElements[i] = DOMElements.currentLevelElements[DOMElements.currentLevelElements.length - 1];
-                    DOMElements.currentLevelElements.pop();
-
-                    addPoints(pointsPerElement);
-                    eatenElement(elem);
+                            //override the eaten element in the array with the last element and then remove the last element in array
+                            DOMElements.currentLevelElements[i] = DOMElements.currentLevelElements[DOMElements.currentLevelElements.length - 1];
+                            DOMElements.currentLevelElements.pop();
+                            elem.classList.add('eaten');
+                            addPoints(pointsPerElement);
+                            eatenElement(elem);
+                        }
                 }
             }
         }
@@ -263,8 +265,20 @@
                     this._getPageElements(element.children[i], depth + 1);
                 }
             }
+            else {
+                element.classList.add('eaten');
+            }
 
             return this;
+        }
+
+        canBeEaten(element) {
+            for(let i=0; i<element.children.length; i+=1) {
+                if(!element.children[i].classList.contains('eaten')) {
+                    return false;
+                }
+            }
+            return true;
         }
 
 
@@ -481,6 +495,7 @@
      * used in the function addPoints()
      */
     function nextLevel() {
+        
         level++;
         alert(`gz, you are level ${level} now!`);
         snake.addBody(3);
