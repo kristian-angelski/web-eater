@@ -140,7 +140,7 @@
 
             let snakeLength = this.snakeBody.length;
             for (let i = snakeLength - 1; i !== 0; i -= 1) {
-                let nextSnakePart = this.snakeBody[i-1];
+                let nextSnakePart = this.snakeBody[i - 1];
 
                 this.snakeBody[i][nextSnakePart.direction.item] = nextSnakePart[nextSnakePart.direction.item];
                 this.snakeBody[i].direction = nextSnakePart.direction;
@@ -209,7 +209,7 @@
         moveSnake(timestamp) {
 
             this.frameCounter += 1;
-            if(!(this.frameCounter % (60/this.framesPerSecond))) {
+            if (!(this.frameCounter % (60 / this.framesPerSecond))) {
                 this.snakeBodyCounter = 0;
 
                 snake.calcNewCoordinates();
@@ -473,9 +473,9 @@
 
 
     function calcPointsForLevels() {
-        levels[1].pointsToLevel = DOMElements.currentLevelElements.length * pointsPerElement /2;   //50% of chars
-        for(let i=2; i < Object.keys(levels).length+1; i+=1) {
-            levels[i].pointsToLevel = levels[i-1].pointsToLevel + 2000;
+        levels[1].pointsToLevel = DOMElements.currentLevelElements.length * pointsPerElement / 2;   //50% of chars
+        for (let i = 2; i < Object.keys(levels).length + 1; i += 1) {
+            levels[i].pointsToLevel = levels[i - 1].pointsToLevel + 2000;
         }
     }
 
@@ -689,31 +689,35 @@
                             if (parentTag[i].nodeType === 3) {
 
                                 currentEl = parentTag[i].nodeValue.trim();
-                                currElLength = currentEl.length;
 
-                                for (let j = 0; j < currElLength; j += 1) {
+                                if (currentEl !== '') {
+                                    
+                                    currElLength = currentEl.length;
 
-                                    let textTag = document.createElement('text');
-                                    textTag.innerHTML = currentEl[j];
-                                    currentElArr.push(textTag.outerHTML);
+                                    for (let j = 0; j < currElLength; j += 1) {
 
-                                }
+                                        let textTag = document.createElement('text');
+                                        textTag.innerHTML = currentEl[j];
+                                        currentElArr.push(textTag.outerHTML);
 
-                                currentElString = currentElArr.join('');
-                                currentElArr = [];
+                                    }
 
-                                //push all changed symbols in onе texttext tag
-                                let textTextTag = document.createElement('textText');
-                                textTextTag.innerHTML = currentElString;
+                                    currentElString = currentElArr.join('');
+                                    currentElArr = [];
 
-                                if (parentTag[i] === parentTag[i].parentNode.lastChild) {
-                                    prevSib = parentTag[i].previousSibling;
-                                    prevSib.parentNode.removeChild(prevSib.parentNode.lastChild);
-                                    prevSib.parentNode.appendChild(textTextTag);
-                                } else {
-                                    nextSib = parentTag[i].nextSibling;
-                                    parentTag[i].parentNode.removeChild(nextSib.previousSibling);
-                                    nextSib.parentNode.insertBefore(textTextTag, nextSib);
+                                    //push all changed symbols in onе texttext tag
+                                    let textTextTag = document.createElement('textText');
+                                    textTextTag.innerHTML = currentElString;
+
+                                    if (parentTag[i] === parentTag[i].parentNode.lastChild) {
+                                        prevSib = parentTag[i].previousSibling;
+                                        prevSib.parentNode.removeChild(prevSib.parentNode.lastChild);
+                                        prevSib.parentNode.appendChild(textTextTag);
+                                    } else {
+                                        nextSib = parentTag[i].nextSibling;
+                                        parentTag[i].parentNode.removeChild(nextSib.previousSibling);
+                                        nextSib.parentNode.insertBefore(textTextTag, nextSib);
+                                    }
                                 }
                             }
                         }
