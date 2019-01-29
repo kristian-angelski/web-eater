@@ -20,43 +20,38 @@
         1: {
             food: ['text'],
             pointsToLevel: 600,
-            speed: 3,
         },
         2: {
             food: ['b', 'big', 'i', 'small', 'tt', 'a', 'bdo', 'br', 'img', 'map', 'object', 'q', 'span', 'sub', 'sup'],
             pointsToLevel: 1200,
-            speed: 4
         },
         3: {
             food: ['abbr', 'acronym', 'cite', 'code', 'dfn', 'em', 'kbd', 'strong', 'samp', 'var', 'button', 'input', 'label', 'select', 'textarea'],
             pointsToLevel: 1600,
-            speed: 5
         },
         4: {
             food: ['noscript', 'hr', 'dl', 'h4', 'h5', 'h6'],
             pointsToLevel: 2000,
-            speed: 6
         },
         5: {
             food: ['p', 'h1', 'h2', 'h3', 'ol', 'ul', 'pre', 'address', 'blockquote'],
             pointsToLevel: 3000,
-            speed: 7
         },
         6: {
             food: ['table', 'form', 'fieldset'],
             pointsToLevel: 4000,
-            speed: 7
         },
         7: {
             food: ['div'],
             pointsToLevel: 5000,
-            speed: 7
         }
     }
 
-    let defaultSpeed = levels[level].speed;
-    let speed = defaultSpeed;
-    let speedOnKeyPressed = levels[level].speed + 2;
+    const gameConstants = {
+        snakeBodySize: 20,
+        sizeDimension: 'px'
+    };
+    let speed = gameConstants.snakeBodySize;
 
     const directions = {
         39: { item: 'left', sign: 1 },    //right
@@ -69,12 +64,6 @@
         87: { item: 'top', sign: -1 },    //up - W
     }
     let direction = directions['39'];
-
-    const gameConstants = {
-        snakeBodySize: 20,
-        sizeDimension: 'px'
-    };
-
 
 
 
@@ -108,8 +97,13 @@
         constructor() {
             this.snakeBody = [];
             this.snakeHeadDOM = this.createSnakeHead();
+            this.defaultFramesPerSecond = 20;
+            this.framesPerSecond = this.defaultFramesPerSecond;
+            this.frameCounter = 1;
+            this.snakeBodyCounter = 10;
+            this.snakeMultiplier = 1.3;
 
-            for (let i = 0; i < 10; i += 1)
+            for (let i = 0; i < this.snakeBodyCounter; i += 1)
                 this.addBody();
         }
 
@@ -126,6 +120,7 @@
             snakeItem.style.top = 0 + gameConstants.sizeDimension;
             snakeItem.left = 0;
             snakeItem.top = 0;
+            snakeItem.direction = direction;
             document.body.appendChild(snakeItem);
             return snakeItem;
         }
@@ -145,13 +140,16 @@
 
             let snakeLength = this.snakeBody.length;
             for (let i = snakeLength - 1; i !== 0; i -= 1) {
-                this.snakeBody[i].left = this.snakeBody[i - 1].left;
-                this.snakeBody[i].top = this.snakeBody[i - 1].top;
+                let nextSnakePart = this.snakeBody[i-1];
+
+                this.snakeBody[i][nextSnakePart.direction.item] = nextSnakePart[nextSnakePart.direction.item];
+                this.snakeBody[i].direction = nextSnakePart.direction;
             }
 
-            this.snakeBody[0].left = this.snakeHeadDOM.left;
-            this.snakeBody[0].top = this.snakeHeadDOM.top;
+            this.snakeBody[0][this.snakeHeadDOM.direction.item] = this.snakeHeadDOM[this.snakeHeadDOM.direction.item];
+            this.snakeBody[0].direction = this.snakeHeadDOM.direction;
             this.snakeHeadDOM[direction.item] += direction.sign * speed;
+            this.snakeHeadDOM.direction = direction;
 
             if (this.snakeHeadDOM.left < 0) {
                 this.snakeHeadDOM.left = bodyWidth - gameConstants.snakeBodySize;
@@ -210,10 +208,15 @@
          */
         moveSnake(timestamp) {
 
+            this.frameCounter += 1;
+            if(!(this.frameCounter % (60/this.framesPerSecond))) {
+                this.snakeBodyCounter = 0;
+
+                snake.calcNewCoordinates();
+                snake.checkCollision();
+                snake.draw();
+            }
             updateGameInfo(timestamp);
-            snake.calcNewCoordinates();
-            snake.checkCollision();
-            snake.draw();
 
             window.requestAnimationFrame(this.moveSnake.bind(this));    //call the fn again
         }
@@ -463,8 +466,6 @@
     function nextLevel() {
         level++;
         alert(`gz, you are level ${level} now!`);
-        defaultSpeed = levels[level].speed;
-        speedOnKeyPressed = defaultSpeed + 3;
         DOMElements.setLevelElements();
         if (DOMElements.currentLevelElements.length === 0) //check if there are any elements of this type on the page, if not, go to next level. Otherwise you're stuck on a level you can never eat anything.
             nextLevel();
@@ -472,9 +473,9 @@
 
 
     function calcPointsForLevels() {
-        levels[1].pointsToLevel = DOMElements.currentLevelElements.length * pointsPerElement / 2;
-        for (let i = 2; i < Object.keys(levels).length + 1; i += 1) {
-            levels[i].pointsToLevel = levels[i - 1].pointsToLevel + 1000;
+        levels[1].pointsToLevel = DOMElements.currentLevelElements.length * pointsPerElement /2;   //50% of chars
+        for(let i=2; i < Object.keys(levels).length+1; i+=1) {
+            levels[i].pointsToLevel = levels[i-1].pointsToLevel + 2000;
         }
     }
 
@@ -614,14 +615,14 @@
 
     function changeDirection(event) {
         if (Object.keys(directions).indexOf(String(event.keyCode)) != -1) {
-            speed = speedOnKeyPressed;
+            snake.framesPerSecond = snake.defaultFramesPerSecond * snake.speedMultiplier;
             direction = directions[event.keyCode];
         }
     }
 
     function decreaseSpeed() {
         if (Object.keys(directions).indexOf(String(event.keyCode)) != -1) {
-            speed = defaultSpeed;
+            snake.framesPerSecond = snake.defaultFramesPerSecond;
         }
     }
 
