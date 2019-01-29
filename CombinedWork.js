@@ -208,7 +208,6 @@
          */
         moveSnake(timestamp) {
 
-            debugger;
             this.frameCounter += 1;
             if(!(this.frameCounter % (60/this.framesPerSecond))) {
                 this.snakeBodyCounter = 0;
