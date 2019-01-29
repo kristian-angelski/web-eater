@@ -244,7 +244,8 @@
 		 * @param {Number} depth 
 		 */
         _getPageElements(element, depth) {                                  //called for every element
-
+            element.depth = depth;
+            element.classList.add('eaten');                                 //set the class eaten for every element
             this._sortByDepth(element, depth);
             this._setElementAbsoluteCoords(element);
 
@@ -261,15 +262,9 @@
                     this[elementTag] = [element];                           //if it does not exist, create array and store element inside 
 
                 for (let i = 0; i < element.children.length; i++) {         //recursive call for each element
-                    element.depth = depth;
                     this._getPageElements(element.children[i], depth + 1);
                 }
             }
-            else {
-                element.classList.add('eaten');
-            }
-
-            return this;
         }
 
         canBeEaten(element) {
@@ -382,11 +377,13 @@
 
             if (level === 1) {                      // if level 1 (text elements)   -- dont set a border around the letters
                 elements.forEach(function (elem) {
+                    elem.classList.remove('eaten');
                     _this.currentLevelElements.push(elem);
                 });
             }
             else {                                          // else set border around the elements
                 elements.forEach(function (elem) {
+                    elem.classList.remove('eaten');
                     elem.style.border = ' 1px solid red';
                     _this.currentLevelElements.push(elem);
                 });
