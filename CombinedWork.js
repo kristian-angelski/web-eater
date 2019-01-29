@@ -2,7 +2,7 @@
     //GLOBAL VARIABLES
     let snake = null;
     let DOMElements = null;
-    let level = 1;
+    let level = 4;
     let currentPoints = 0;
     let pointsPerElement = 5;
     let htmlPage = document.querySelector('html');
@@ -503,6 +503,7 @@
         let divElement = document.createElement('div');
         divElement.style.width = 'fit-content';
         divElement.style.height = 'fit-content';
+        divElement.style.maxWidth = '200px';
         divElement.style.position = 'fixed';
         divElement.style.right = '0px';
         divElement.style.top = '90px';
@@ -517,6 +518,7 @@
         let divPar = document.createElement('div');
         divPar.style.width = 'fit-content';
         divPar.style.height = 'fit-content';
+        divElement.style.maxWidth = '200px';
         divPar.style.position = 'fixed';
         divPar.style.right = '10px';
         divPar.style.top = '5px';
@@ -605,15 +607,11 @@
             document.getElementById('p2').innerText = 'Current Level: ' + level + '\nPoints: ' + currentPoints +
                 '\nElements Left: ' + DOMElements.currentLevelElements.length + '\nTime: ' + timeString + '\nEaten tags:';
             
-                var theFood = '';
+                var theFood = levels[level].food.join(', ');
 
-                for(i=0; i <= levels[level].food.length; i++) {
-                    theFood = [levels[level].food[i] + '\n'];
-                }
-                
-                var pointsLeft = parseInt(levels[level].pointsToLevel - currentPoints) / pointsPerElement;
-                
-                document.getElementById('p4').innerText = 'Points to Next Level: ' + pointsLeft;
+                var pointsLeft = parseInt(levels[level].pointsToLevel - currentPoints);
+
+                document.getElementById('p4').innerText = 'Points to Next Level: ' + pointsLeft + '\nEat the: ' + theFood;
         }
     }
 
