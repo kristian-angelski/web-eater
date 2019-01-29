@@ -513,6 +513,19 @@
         divElement.style.opacity = '0.7';
         divElement.setAttribute('id', 'uidiv');
         document.body.appendChild(divElement);
+
+        let divPar = document.createElement('div');
+        divPar.style.width = 'fit-content';
+        divPar.style.height = 'fit-content';
+        divPar.style.position = 'fixed';
+        divPar.style.right = '10px';
+        divPar.style.top = '5px';
+        divPar.style.zIndex = '100';
+        divPar.style.backgroundColor = 'black';
+        divPar.style.padding = '10px';
+        divPar.style.opacity = '0.7';
+        divPar.setAttribute('id', 'divpar');
+        document.body.appendChild(divPar);
     }
     // Game Heading and Gameplay Instructions
     function createUserInstructions() {
@@ -558,6 +571,19 @@
         paragraph3.style.fontSize = 'large';
         paragraph3.setAttribute('id', 'p3');
         document.getElementById('uidiv').appendChild(paragraph3);
+
+        let paragraph4 = document.createElement('p');
+        paragraph4.style.height = 'fit-content';
+        paragraph4.style.width = 'fit-content';
+        paragraph4.style.zIndex = '2';
+        paragraph4.style.position = 'relative';
+        paragraph4.style.color = 'red';
+        paragraph4.style.fontFamily = 'auto';
+        paragraph4.style.fontWeight = 'bold';
+        paragraph4.style.fontSize = 'large';
+        paragraph4.style.marginBottom = '5px';
+        paragraph4.setAttribute('id', 'p4');
+        document.getElementById('divpar').appendChild(paragraph4);
     }
 
     function updateGameInfo(timestamp) {
@@ -578,6 +604,16 @@
 
             document.getElementById('p2').innerText = 'Current Level: ' + level + '\nPoints: ' + currentPoints +
                 '\nElements Left: ' + DOMElements.currentLevelElements.length + '\nTime: ' + timeString + '\nEaten tags:';
+            
+                var theFood = '';
+
+                for(i=0; i <= levels[level].food.length; i++) {
+                    theFood = [levels[level].food[i] + '\n'];
+                }
+                
+                var pointsLeft = parseInt(levels[level].pointsToLevel - currentPoints) / pointsPerElement;
+                
+                document.getElementById('p4').innerText = 'Points to Next Level: ' + pointsLeft;
         }
     }
 
