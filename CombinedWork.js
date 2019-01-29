@@ -19,31 +19,24 @@
     const levels = {
         1: {
             food: ['text'],
-            pointsToLevel: 600,
         },
         2: {
             food: ['b', 'big', 'i', 'small', 'tt', 'a', 'bdo', 'br', 'img', 'map', 'object', 'q', 'span', 'sub', 'sup'],
-            pointsToLevel: 1200,
         },
         3: {
-            food: ['abbr', 'acronym', 'cite', 'code', 'dfn', 'em', 'kbd', 'strong', 'samp', 'var', 'button', 'input', 'label', 'select', 'textarea'],
-            pointsToLevel: 1600,
+            food: ['abbr', 'acronym', 'cite', 'code', 'dfn', 'em', 'kbd', 'strong', 'samp', 'var', 'button', 'input', 'label', 'select', 'textarea',, 'h4', 'h5', 'h6'],
         },
         4: {
-            food: ['noscript', 'hr', 'dl', 'h4', 'h5', 'h6'],
-            pointsToLevel: 2000,
+            food: ['p', 'h1', 'h2', 'h3','noscript', 'hr', 'dl'],
         },
         5: {
-            food: ['p', 'h1', 'h2', 'h3', 'ol', 'ul', 'pre', 'address', 'blockquote'],
-            pointsToLevel: 3000,
+            food: ['ol', 'ul', 'pre', 'address', 'blockquote'],
         },
         6: {
             food: ['table', 'form', 'fieldset'],
-            pointsToLevel: 4000,
         },
         7: {
             food: ['div'],
-            pointsToLevel: 5000,
         }
     }
 
@@ -84,8 +77,6 @@
         createUserInstructions();
         createGameInfo();
         snake.moveSnake(); // call last
-        console.log(levels);
-
     };
 
 
