@@ -19,31 +19,24 @@
     const levels = {
         1: {
             food: ['text'],
-            pointsToLevel: 600,
         },
         2: {
             food: ['b', 'big', 'i', 'small', 'tt', 'a', 'bdo', 'br', 'img', 'map', 'object', 'q', 'span', 'sub', 'sup'],
-            pointsToLevel: 1200,
         },
         3: {
-            food: ['abbr', 'acronym', 'cite', 'code', 'dfn', 'em', 'kbd', 'strong', 'samp', 'var', 'button', 'input', 'label', 'select', 'textarea'],
-            pointsToLevel: 1600,
+            food: ['abbr', 'acronym', 'cite', 'code', 'dfn', 'em', 'kbd', 'strong', 'samp', 'var', 'button', 'input', 'label', 'select', 'textarea',, 'h4', 'h5', 'h6'],
         },
         4: {
-            food: ['noscript', 'hr', 'dl', 'h4', 'h5', 'h6'],
-            pointsToLevel: 2000,
+            food: ['p', 'h1', 'h2', 'h3','noscript', 'hr', 'dl'],
         },
         5: {
-            food: ['p', 'h1', 'h2', 'h3', 'ol', 'ul', 'pre', 'address', 'blockquote'],
-            pointsToLevel: 3000,
+            food: ['ol', 'ul', 'pre', 'address', 'blockquote'],
         },
         6: {
             food: ['table', 'form', 'fieldset'],
-            pointsToLevel: 4000,
         },
         7: {
             food: ['div'],
-            pointsToLevel: 5000,
         }
     }
 
@@ -84,8 +77,6 @@
         createUserInstructions();
         createGameInfo();
         snake.moveSnake(); // call last
-        console.log(levels);
-
     };
 
 
@@ -97,14 +88,13 @@
         constructor() {
             this.snakeBody = [];
             this.snakeHeadDOM = this.createSnakeHead();
-            this.defaultFramesPerSecond = 20;
+            this.defaultFramesPerSecond = 10;
             this.framesPerSecond = this.defaultFramesPerSecond;
             this.frameCounter = 1;
+            this.speedMultiplier = 1;
             this.snakeBodyCounter = 10;
-            this.snakeMultiplier = 1.3;
 
-            for (let i = 0; i < this.snakeBodyCounter; i += 1)
-                this.addBody();
+            this.addBody(this.snakeBodyCounter);
         }
 
 
@@ -162,8 +152,12 @@
             }
         }
 
-        addBody() {
-            this.snakeBody.push(this.createSnakeBody());
+        addBody(num) {
+
+            for (let i = 0; i < num; i += 1){
+                this.snakeBody.push(this.createSnakeBody());
+                this.snakeBodyCounter++;
+            }
         }
 
         draw() {
@@ -188,14 +182,16 @@
                     elem.absoluteY < this.snakeHeadDOM.top + gameConstants.snakeBodySize &&
                     elem.absoluteBottom > this.snakeHeadDOM.top) {
 
-                    elem.style.opacity = 0; //opacity 0
+                        if(DOMElements.canBeEaten(elem)) {
+                            elem.style.opacity = 0; //opacity 0
 
-                    //override the eaten element in the array with the last element and then remove the last element in array
-                    DOMElements.currentLevelElements[i] = DOMElements.currentLevelElements[DOMElements.currentLevelElements.length - 1];
-                    DOMElements.currentLevelElements.pop();
-
-                    addPoints(pointsPerElement);
-                    eatenElement(elem);
+                            //override the eaten element in the array with the last element and then remove the last element in array
+                            DOMElements.currentLevelElements[i] = DOMElements.currentLevelElements[DOMElements.currentLevelElements.length - 1];
+                            DOMElements.currentLevelElements.pop();
+                            elem.classList.add('eaten');
+                            addPoints(pointsPerElement);
+                            eatenElement(elem);
+                        }
                 }
             }
         }
@@ -248,7 +244,8 @@
 		 * @param {Number} depth 
 		 */
         _getPageElements(element, depth) {                                  //called for every element
-
+            element.depth = depth;
+            element.classList.add('eaten');                                 //set the class eaten for every element
             this._sortByDepth(element, depth);
             this._setElementAbsoluteCoords(element);
 
@@ -265,12 +262,18 @@
                     this[elementTag] = [element];                           //if it does not exist, create array and store element inside 
 
                 for (let i = 0; i < element.children.length; i++) {         //recursive call for each element
-                    element.depth = depth;
                     this._getPageElements(element.children[i], depth + 1);
                 }
             }
+        }
 
-            return this;
+        canBeEaten(element) {
+            for(let i=0; i<element.children.length; i+=1) {
+                if(!element.children[i].classList.contains('eaten')) {
+                    return false;
+                }
+            }
+            return true;
         }
 
 
@@ -338,6 +341,29 @@
             elem.absoluteBottom = coords.height + coords.top;
         }
 
+
+        _setFixedElementAbsoluteCoords(elem) {
+            let coords = elem.getBoundingClientRect();
+
+            if (coords.top < window.visualViewport.height/2) {
+                elem.absoluteY = coords.top;
+                elem.absoluteBottom = coords.bottom;
+            }
+            else {
+                elem.absoluteY =  pageYOffset + coords.top;
+                elem.absoluteBottom = pageYOffset + coords.bottom;
+            }
+
+            if (coords.left < window.visualViewport.width/2) {
+                elem.absoluteX = coords.left;
+                elem.absoluteRight = coords.right;
+            }
+            else {
+                elem.absoluteX = pageXOffset + coords.left;
+                elem.absoluteRight= pageXOffset + coords.right
+            }
+        }
+
 		/**
          * Calls _getArrayOfElements to get the tagNames of what elements it needs to get.
          * 
@@ -351,11 +377,13 @@
 
             if (level === 1) {                      // if level 1 (text elements)   -- dont set a border around the letters
                 elements.forEach(function (elem) {
+                    elem.classList.remove('eaten');
                     _this.currentLevelElements.push(elem);
                 });
             }
             else {                                          // else set border around the elements
                 elements.forEach(function (elem) {
+                    elem.classList.remove('eaten');
                     elem.style.border = ' 1px solid red';
                     _this.currentLevelElements.push(elem);
                 });
@@ -464,8 +492,10 @@
      * used in the function addPoints()
      */
     function nextLevel() {
+        
         level++;
         alert(`gz, you are level ${level} now!`);
+        snake.addBody(3);
         DOMElements.setLevelElements();
         if (DOMElements.currentLevelElements.length === 0) //check if there are any elements of this type on the page, if not, go to next level. Otherwise you're stuck on a level you can never eat anything.
             nextLevel();
