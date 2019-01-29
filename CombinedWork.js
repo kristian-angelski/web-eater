@@ -30,7 +30,7 @@
             pointsToLevel: 1600,
         },
         4: {
-            food: ['noscript', 'hr',  'dl', 'h4', 'h5', 'h6'],
+            food: ['noscript', 'hr', 'dl', 'h4', 'h5', 'h6'],
             pointsToLevel: 2000,
         },
         5: {
@@ -84,6 +84,8 @@
         createUserInstructions();
         createGameInfo();
         snake.moveSnake(); // call last
+        console.log(levels);
+
     };
 
 
@@ -625,7 +627,6 @@
         }
     }
 
-
     function getTextCoordinates() {
 
         let allTags = document.body.querySelectorAll('*'),
@@ -693,11 +694,9 @@
 
                                 for (let j = 0; j < currElLength; j += 1) {
 
-                                    if(currentEl[j] !== ' ') {
                                     let textTag = document.createElement('text');
                                     textTag.innerHTML = currentEl[j];
                                     currentElArr.push(textTag.outerHTML);
-                                    }
 
                                 }
 
