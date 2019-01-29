@@ -1,11 +1,12 @@
 const gameConstants = {
-	maxPageWidth: document.body.offsetWidth,
-	maxPageHeight: document.body.scrollHeight,
+	bodyHeight: document.body.offsetHeight,
+	bodyWidth: document.body.offsetWidth,
 	snakeBodySize: 20,
 	sizeDimension: 'px'
 }; //declaring all the game parameters needed
 
 const directions = {
+
 	'right': {
 		item: 'right',
 		inputMapping: [39]
@@ -23,6 +24,13 @@ const directions = {
 		inputMapping: [38]
 	},
 }// directions and their key mappings
+=======
+	'right': 39,
+	'left': 37,
+	'down': 40,
+	'top': 38
+}
+
 
 class Snake {
 	constructor(maxWidthUnits, maxHeightUnits) {
@@ -89,7 +97,7 @@ class Snake {
 	}
 
 	changeDirection(direction) {
-		this.direction = direction;
+		this.direction = directions[direction];
 	}
 
 	addBody() {
@@ -143,19 +151,19 @@ function createDiv() {
 }
 
 
-let maxWidthUnits = Math.floor(gameConstants.maxPageWidth / gameConstants.snakeBodySize);
-let maxHeightUnits = Math.floor(gameConstants.maxPageHeight / gameConstants.snakeBodySize);
+let maxWidthUnits = Math.floor(gameConstants.bodyWidth / gameConstants.snakeBodySize);
+let maxHeightUnits = Math.floor(gameConstants.bodyHeight / gameConstants.snakeBodySize);
 let snake = new Snake(maxWidthUnits, maxHeightUnits);
 
-document.addEventListener('keydown', (event) => {
-	let keyPressed = event.keyCode;
-	let direction = Object.keys(directions).forEach((key) => {
-		if (directions[key].inputMapping.indexOf(keyPressed) !== -1) {
-			// console.log(currentDirection);
-			snake.changeDirection(directions[key]);
+document.addEventListener('keydown', changeDirection);
+
+function changeDirection(event) {
+	for(let direction of Object.keys(directions)) {
+		if (directions[direction] === event.keyCode) {
+			snake.changeDirection(direction);
 		}
-	});
-});
+	};
+}
 
 
 setInterval(() => {
