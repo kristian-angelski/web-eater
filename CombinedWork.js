@@ -249,6 +249,7 @@
             this._sortByDepth(element, depth);
 
             /* if (element.style.position === 'fixed' || element.style.position === 'sticky') { 
+                debugger;
                 this._fixedElements(element, depth);
             }
             else { */
@@ -274,7 +275,7 @@
         }
 
 
-      /*   _fixedElements(element, depth) {
+        /* _fixedElements(element, depth) {
             element.depth = depth;
             element.classList.add('eaten');
             this._sortByDepth(element, depth);
@@ -358,15 +359,15 @@
         }
 
         _setElementAbsoluteCoords(elem) {
-            //let coords = Dom.utilities.getAbsolutePageCoordinates(elem);
-            elem.absoluteX = elem.offsetLeft;
-            elem.absoluteY = elem.offsetTop;
-            elem.absoluteRight = elem.offsetLeft + elem.offsetWidth;
-            elem.absoluteBottom = elem.offsetTop + elem.offsetHeight;
+            let coords = Dom.utilities.getAbsolutePageCoordinates(elem);
+            elem.absoluteX = coords.left;
+            elem.absoluteY = coords.top;
+            elem.absoluteRight = coords.width + coords.left;
+            elem.absoluteBottom = coords.height + coords.top;
         }
 
 
-        _setFixedElementAbsoluteCoords(elem) {
+        /* _setFixedElementAbsoluteCoords(elem) {
             let coords = elem.getBoundingClientRect();
 
             if (elem.offsetTop < window.visualViewport.height / 2) {
@@ -386,7 +387,7 @@
                 elem.absoluteX = elem.offsetLeft;
                 elem.absoluteRight = elem.offsetLeft + elem.offsetWidth;
             }
-        }
+        } */
 
 		/**
          * Calls _getArrayOfElements to get the tagNames of what elements it needs to get.
@@ -532,7 +533,7 @@
     function nextLevel() {
 
         level++;
-        alert(`gz, you are level ${level} now!`);
+        //alert(`gz, you are level ${level} now!`);
         snake.addBody(3);
         DOMElements.setLevelElements();
         bodyWidth = htmlPage.scrollWidth;
