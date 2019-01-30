@@ -1,5 +1,11 @@
 (function SnakeGame() {
     //GLOBAL VARIABLES
+    chrome.storage.sync.get(['snakeHeadColor', 'snakeBodyColor', 'percentOfItems'], function (items) {
+        snakeHeadColor = items.snakeHeadColor;
+        snakeBodyColor = items.snakeBodyColor;
+        levels[1].percentOfItems = items.percentOfItems;
+        init();
+    });
     let snakeHeadColor = 'black';
     let snakeBodyColor = 'green';
     let snake = null;
@@ -842,7 +848,4 @@
             }
         }
     }
-
-
-    init();
 })();
