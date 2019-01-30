@@ -532,9 +532,11 @@
     function nextLevel() {
 
         level++;
-        //alert(`gz, you are level ${level} now!`);
+        alert(`gz, you are level ${level} now!`);
         snake.addBody(3);
         DOMElements.setLevelElements();
+        bodyWidth = htmlPage.scrollWidth;
+        bodyHeight = htmlPage.scrollHeight;
         if (DOMElements.currentLevelElements.length === 0) //check if there are any elements of this type on the page, if not, go to next level. Otherwise you're stuck on a level you can never eat anything.
             nextLevel();
     }
