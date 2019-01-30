@@ -510,7 +510,7 @@
             divElement.style.backgroundColor = 'black';
             divElement.style.paddingLeft = '10px';
             divElement.style.paddingRight = '10px';
-            divElement.style.opacity = '0.6';
+            divElement.style.opacity = '0.5';
             divElement.setAttribute('id', 'uidiv');
             document.body.appendChild(divElement);
 
@@ -519,9 +519,7 @@
             divPar.style.height = 'fit-content';
             divElement.style.maxWidth = '200px';
             divPar.style.position = 'static';
-            
             divPar.setAttribute('id', 'divpar');
-            
             document.getElementById('uidiv').appendChild(divPar);
         }
         // Game Heading and Gameplay Instructions
@@ -536,6 +534,7 @@
             paragraph.style.fontSize = 'large';
             paragraph.style.fontWeight = 'bold';
             paragraph.style.textDecoration = 'underline';
+            paragraph.style.marginTop = '5px';
             paragraph.setAttribute('id', 'p1');
             document.getElementById('uidiv').appendChild(paragraph);
             paragraph.innerText = 'Use the arrow keys to move.' + '\nTo win the game eat all the webpage elements';
@@ -575,10 +574,10 @@
             paragraph4.style.zIndex = '2';
             paragraph4.style.position = 'relative';
             paragraph4.style.color = 'white';
-            paragraph4.style.fontFamily = 'auto';
+            paragraph4.style.fontFamily = 'Times New Roman';
             paragraph4.style.fontWeight = 'bold';
             paragraph4.style.fontSize = 'large';
-            paragraph4.style.margin = '0px';
+            paragraph4.style.margin = '1px';
             paragraph4.setAttribute('id', 'p4');
             document.getElementById('divpar').appendChild(paragraph4);
         }
@@ -602,7 +601,7 @@
                 document.getElementById('p2').innerText = 'Current Level: ' + level + '\nPoints: ' + currentPoints +
                     '\nElements Left: ' + DOMElements.currentLevelElements.length + '\nTime: ' + timeString + '\nEaten tags:';
                 
-                    var theFood = levels[level].food; // .join(', ');
+                    var theFood = levels[level].food;
                     var edible = [];
 
                     theFood.forEach(function(element) {
