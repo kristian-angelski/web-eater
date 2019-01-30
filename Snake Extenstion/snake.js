@@ -1,12 +1,11 @@
 (function SnakeGame() {
     //GLOBAL VARIABLES
-    chrome.storage.sync.get(['snakeHeadColor', 'snakeBodyColor', 'percentOfItems'], function(items) {
+    chrome.storage.sync.get(['snakeHeadColor', 'snakeBodyColor', 'percentOfItems'], function (items) {
         snakeHeadColor = items.snakeHeadColor;
         snakeBodyColor = items.snakeBodyColor;
         levels[1].percentOfItems = items.percentOfItems;
-        console.log(levels);
         init();
-      });
+    });
     let snakeHeadColor = 'black';
     let snakeBodyColor = 'green';
     let snake = null;
@@ -57,40 +56,19 @@
     let speed = gameConstants.snakeBodySize;
 
     const directions = {
-        39: {
-            item: 'left',
-            sign: 1
-        }, //right
-        68: {
-            item: 'left',
-            sign: 1
-        }, //right - D
-        37: {
-            item: 'left',
-            sign: -1
-        }, //left
-        65: {
-            item: 'left',
-            sign: -1
-        }, //left - A
-        40: {
-            item: 'top',
-            sign: 1
-        }, //down
-        83: {
-            item: 'top',
-            sign: 1
-        }, //down - S
-        38: {
-            item: 'top',
-            sign: -1
-        }, //up
-        87: {
-            item: 'top',
-            sign: -1
-        }, //up - W
+        39: { item: 'left', sign: 1 },    //right
+        68: { item: 'left', sign: 1 },    //right - D
+        37: { item: 'left', sign: -1 },   //left
+        65: { item: 'left', sign: -1 },   //left - A
+        40: { item: 'top', sign: 1 },     //down
+        83: { item: 'top', sign: 1 },     //down - S
+        38: { item: 'top', sign: -1 },    //up
+        87: { item: 'top', sign: -1 },    //up - W
     }
     let direction = directions['39'];
+
+
+
 
     /**
      * Called once to initialize the game
@@ -119,10 +97,8 @@
         constructor() {
             this.snakeBody = [];
             this.snakeHeadDOM = this.createSnakeHead();
-            this.defaultFramesPerSecond = 10;
-            this.framesPerSecond = this.defaultFramesPerSecond;
-            this.frameCounter = 1;
-            this.speedMultiplier = 1;
+            this.speed = 4;
+            this.frameCounter = 0;
             this.snakeBodyCounter = 10;
 
             this.addBody(this.snakeBodyCounter);
@@ -157,10 +133,7 @@
 
         calcNewCoordinates() {
 
-            snake.snakeHeadDOM.scrollIntoView({
-                block: "center",
-                inline: "center"
-            });
+            snake.snakeHeadDOM.scrollIntoView({ block: "center", inline: "center" });
 
             let snakeLength = this.snakeBody.length;
             for (let i = snakeLength - 1; i !== 0; i -= 1) {
@@ -175,6 +148,7 @@
             this.snakeHeadDOM[direction.item] += direction.sign * speed;
             this.snakeHeadDOM.direction = direction;
 
+            //check if the snake's head is about to exit the page
             if (this.snakeHeadDOM.left < 0) {
                 this.snakeHeadDOM.left = bodyWidth - gameConstants.snakeBodySize;
             } else if (this.snakeHeadDOM.top < 0) {
@@ -217,6 +191,7 @@
                     elem.absoluteBottom > this.snakeHeadDOM.top) {
 
                     if (DOMElements.canBeEaten(elem)) {
+                        elem.style.transition = 'opacity 150ms ease-in';
                         elem.style.opacity = 0; //opacity 0
 
                         //override the eaten element in the array with the last element and then remove the last element in array
@@ -239,8 +214,8 @@
         moveSnake(timestamp) {
 
             this.frameCounter += 1;
-            if (!(this.frameCounter % (60 / this.framesPerSecond))) {
-                this.snakeBodyCounter = 0;
+            if (!(this.frameCounter % this.speed)) {
+                this.frameCounter = 0;
 
                 snake.calcNewCoordinates();
                 snake.checkCollision();
@@ -248,7 +223,7 @@
             }
             updateGameInfo(timestamp);
 
-            window.requestAnimationFrame(this.moveSnake.bind(this)); //call the fn again
+            window.requestAnimationFrame(this.moveSnake.bind(this));    //call the fn again
         }
     }
 
@@ -269,46 +244,71 @@
             return this;
         }
 
-        /**
-         * Internal method
-         * 
-         * Cycles through every element on the page when the game is initialized.
-         * 
-         * @param {HTMLObjectElement} element 
-         * @param {Number} depth 
-         */
-        _getPageElements(element, depth) { //called for every element
+		/**
+		 * Internal method
+		 * 
+		 * Cycles through every element on the page when the game is initialized.
+		 * 
+		 * @param {HTMLObjectElement} element 
+		 * @param {Number} depth 
+		 */
+        _getPageElements(element, depth) {                                  //called for every element
             element.depth = depth;
-            element.classList.add('eaten'); //set the class eaten for every element
+            element.classList.add('eaten');                                 //set the class eaten for every element
             this._sortByDepth(element, depth);
+
+            /* if (element.style.position === 'fixed' || element.style.position === 'sticky') { 
+                debugger;
+                this._fixedElements(element, depth);
+            }
+            else { */
             this._setElementAbsoluteCoords(element);
 
-            if ( /* element.clientHeight > 0 && element.clientWidth > 0 &&   */ //check if element is visible on the page
+            if ( //check if element is visible on the page
                 element.absoluteX < bodyWidth &&
                 element.absoluteRight > 0 &&
                 element.absoluteY < bodyHeight &&
                 element.absoluteBottom > 0) {
 
-                let elementTag = element.tagName.toLowerCase(); //element tagName
-                if (this[elementTag]) //if this property exists
-                    this[elementTag].push(element); //push element into it
+                let elementTag = element.tagName.toLowerCase();             //element tagName
+                if (this[elementTag])                                       //if this property exists
+                    this[elementTag].push(element);                         //push element into it
                 else
-                    this[elementTag] = [element]; //if it does not exist, create array and store element inside 
+                    this[elementTag] = [element];                           //if it does not exist, create array and store element inside 
 
-                for (let i = 0; i < element.children.length; i++) { //recursive call for each element
+                for (let i = 0; i < element.children.length; i++) {         //recursive call for each element
                     this._getPageElements(element.children[i], depth + 1);
                 }
             }
+            //}
         }
 
-        canBeEaten(element) {
-            for (let i = 0; i < element.children.length; i += 1) {
-                if (!element.children[i].classList.contains('eaten')) {
-                    return false;
+
+        /* _fixedElements(element, depth) {
+            element.depth = depth;
+            element.classList.add('eaten');
+            this._sortByDepth(element, depth);
+
+            this._setFixedElementAbsoluteCoords(element);
+
+            if ( //check if element is visible on the page
+                element.absoluteX < bodyWidth &&
+                element.absoluteRight > 0 &&
+                element.absoluteY < bodyHeight &&
+                element.absoluteBottom > 0) {
+
+                let elementTag = element.tagName.toLowerCase();             //element tagName
+                if (this[elementTag])                                       //if this property exists
+                    this[elementTag].push(element);                         //push element into it
+                else
+                    this[elementTag] = [element];                           //if it does not exist, create array and store element inside 
+
+                for (let i = 0; i < element.children.length; i++) {         //recursive call for each element
+                    this._fixedElements(element.children[i], depth + 1);
                 }
+                this._getPageElements(element.nextElementSibling, depth)
             }
-            return true;
-        }
+        } */
 
 
         /**
@@ -327,19 +327,21 @@
         }
 
 
-        /**
-         * Internal method
+		/**
+		 * Internal method
          * 
-         * Sorts the tagName of elements found on the page by their count
-         */
+		 * Sorts the tagName of elements found on the page by their count
+		 */
         _sortByNumElements() {
 
             Object.keys(this).forEach(function (key) {
                 if (key != "elementsSortedByNum" && key != 'elementsSortedByDepth' && key != 'currentLevelElements')
-                    this.elementsSortedByNum.push({
-                        numOfElements: this[key].length,
-                        tagName: key
-                    });
+                    this.elementsSortedByNum.push(
+                        {
+                            numOfElements: this[key].length,
+                            tagName: key
+                        }
+                    );
             }.bind(this));
 
             this.elementsSortedByNum.sort(function (a, b) {
@@ -374,43 +376,46 @@
         }
 
 
-        _setFixedElementAbsoluteCoords(elem) {
+        /* _setFixedElementAbsoluteCoords(elem) {
             let coords = elem.getBoundingClientRect();
 
             if (coords.top < window.visualViewport.height / 2) {
                 elem.absoluteY = coords.top;
                 elem.absoluteBottom = coords.bottom;
-            } else {
-                elem.absoluteY = pageYOffset + coords.top;
-                elem.absoluteBottom = pageYOffset + coords.bottom;
+            }
+            else {
+                elem.absoluteY = coords.top + bodyHeight - window.visualViewport.height;
+                elem.absoluteBottom = coords.bottom + bodyHeight - window.visualViewport.height;
             }
 
             if (coords.left < window.visualViewport.width / 2) {
                 elem.absoluteX = coords.left;
                 elem.absoluteRight = coords.right;
-            } else {
-                elem.absoluteX = pageXOffset + coords.left;
-                elem.absoluteRight = pageXOffset + coords.right
             }
-        }
+            else {
+                elem.absoluteX = coords.left + bodyWidth - window.visualViewport.width;
+                elem.absoluteRight = coords.right + bodyWidth - window.visualViewport.width;
+            }
+        } */
 
-        /**
+		/**
          * Calls _getArrayOfElements to get the tagNames of what elements it needs to get.
          * 
          * Calculates the absolute coordinates of each element and 
-         * Sets the property CurrentLevelElements to an array with the given elements
-         */
+		 * Sets the property CurrentLevelElements to an array with the given elements
+		 */
         setLevelElements() {
             let elements = this._getArrayOfElements();
             let _this = this;
             //this.currentLevelElements = []; 
 
-            if (level === 1) { // if level 1 (text elements)   -- dont set a border around the letters
+            if (level === 1) {                      // if level 1 (text elements)   -- dont set a border around the letters
                 elements.forEach(function (elem) {
                     elem.classList.remove('eaten');
                     _this.currentLevelElements.push(elem);
                 });
-            } else { // else set border around the elements
+            }
+            else {                                          // else set border around the elements
                 elements.forEach(function (elem) {
                     elem.classList.remove('eaten');
                     elem.style.border = ' 1px solid red';
@@ -430,6 +435,20 @@
                 elem.absoluteRight = coords.width + coords.left;
                 elem.absoluteBottom = coords.height + coords.top;
             });
+        }
+
+        /**
+         * Checks to see if every child of the element has the class 'eaten'
+         * Returns true if every class has class 'eaten'
+         * @param {HTMLElement} element 
+         */
+        canBeEaten(element) {
+            for (let i = 0; i < element.children.length; i += 1) {
+                if (!element.children[i].classList.contains('eaten')) {
+                    return false;
+                }
+            }
+            return true;
         }
 
 
@@ -464,10 +483,10 @@
 
     Dom.utilities = {
 
-        /**
-         * Get the absolute page coordiantes of an element.
-         * @param {HTMLElement} elem 
-         */
+		/**
+		 * Get the absolute page coordiantes of an element.
+		 * @param {HTMLElement} elem 
+		 */
         getAbsolutePageCoordinates(elem) {
             let box = elem.getBoundingClientRect();
 
@@ -499,18 +518,19 @@
 
 
     /**
-     * Function that will add points, based on eating different elements
-     * @param {Number} points
-     */
+	 * Function that will add points, based on eating different elements
+	 * @param {Number} points
+	 */
     function addPoints(points) {
         currentPoints += points;
 
-        if (levels[level + 1]) { //check if there is a next level
-            if (DOMElements.currentLevelElements.length) { //check if there are any elements left to eat
+        if (levels[level + 1]) {                                        //check if there is a next level
+            if (DOMElements.currentLevelElements.length) {               //check if there are any elements left to eat
                 if (currentPoints >= levels[level].pointsToLevel) {
                     nextLevel();
                 }
-            } else { //if there is nothing left to eat in currentLevelElements array
+            }
+            else {                                                      //if there is nothing left to eat in currentLevelElements array
                 nextLevel();
             }
         }
@@ -522,9 +542,11 @@
     function nextLevel() {
 
         level++;
-        alert(`gz, you are level ${level} now!`);
+        //alert(`gz, you are level ${level} now!`);
         snake.addBody(3);
         DOMElements.setLevelElements();
+        bodyWidth = htmlPage.scrollWidth;
+        bodyHeight = htmlPage.scrollHeight;
         if (DOMElements.currentLevelElements.length === 0) //check if there are any elements of this type on the page, if not, go to next level. Otherwise you're stuck on a level you can never eat anything.
             nextLevel();
     }
@@ -561,30 +583,39 @@
         let divElement = document.createElement('div');
         divElement.style.width = 'fit-content';
         divElement.style.height = 'fit-content';
+        divElement.style.maxWidth = '200px';
         divElement.style.position = 'fixed';
-        divElement.style.right = '0px';
-        divElement.style.top = '90px';
+        divElement.style.right = '10px';
+        divElement.style.top = '20px';
         divElement.style.zIndex = '100';
         divElement.style.backgroundColor = 'black';
-        divElement.style.padding = '10px';
-        divElement.style.marginRight = '10px';
-        divElement.style.opacity = '0.7';
+        divElement.style.paddingLeft = '10px';
+        divElement.style.paddingRight = '10px';
+        divElement.style.opacity = '0.5';
         divElement.setAttribute('id', 'uidiv');
         document.body.appendChild(divElement);
+
+        let divPar = document.createElement('div');
+        divPar.style.width = 'fit-content';
+        divPar.style.height = 'fit-content';
+        divElement.style.maxWidth = '200px';
+        divPar.style.position = 'static';
+        divPar.setAttribute('id', 'divpar');
+        document.getElementById('uidiv').appendChild(divPar);
     }
     // Game Heading and Gameplay Instructions
     function createUserInstructions() {
         let paragraph = document.createElement('p');
         paragraph.style.maxWidth = 200 + 'px';
         paragraph.style.height = 'fit-content';
-        paragraph.style.zIndex = '2';
+        paragraph.style.zIndex = '100';
         paragraph.style.position = 'relative';
         paragraph.style.color = 'white';
         paragraph.style.fontFamily = 'auto';
         paragraph.style.fontSize = 'large';
         paragraph.style.fontWeight = 'bold';
         paragraph.style.textDecoration = 'underline';
-        paragraph.style.marginBottom = '5px';
+        paragraph.style.marginTop = '5px';
         paragraph.setAttribute('id', 'p1');
         document.getElementById('uidiv').appendChild(paragraph);
         paragraph.innerText = 'Use the arrow keys to move.' + '\nTo win the game eat all the webpage elements';
@@ -594,7 +625,7 @@
         let paragraph2 = document.createElement('p');
         paragraph2.style.width = 'fit-content';
         paragraph2.style.height = 'fit-content';
-        paragraph2.style.zIndex = '2';
+        paragraph2.style.zIndex = '100';
         paragraph2.style.position = 'relative';
         paragraph2.style.color = 'white';
         paragraph2.style.fontFamily = 'Comic Sans MS';
@@ -609,13 +640,27 @@
         let paragraph3 = document.createElement('p');
         paragraph3.style.width = 'fit-content';
         paragraph3.style.height = 'fit-content';
-        paragraph3.style.zIndex = '2';
+        paragraph3.style.zIndex = '100';
         paragraph3.style.position = 'relative';
         paragraph3.style.color = 'white';
         paragraph3.style.fontFamily = 'auto';
         paragraph3.style.fontSize = 'large';
         paragraph3.setAttribute('id', 'p3');
         document.getElementById('uidiv').appendChild(paragraph3);
+
+        let paragraph4 = document.createElement('p');
+        paragraph4.style.height = 'fit-content';
+        paragraph4.style.width = 'fit-content';
+        paragraph4.style.maxWidth = 180 + 'px';
+        paragraph4.style.zIndex = '100';
+        paragraph4.style.position = 'relative';
+        paragraph4.style.color = 'white';
+        paragraph4.style.fontFamily = 'Times New Roman';
+        paragraph4.style.fontWeight = 'bold';
+        paragraph4.style.fontSize = 'large';
+        paragraph4.style.margin = '1px';
+        paragraph4.setAttribute('id', 'p4');
+        document.getElementById('divpar').appendChild(paragraph4);
     }
 
     function updateGameInfo(timestamp) {
@@ -623,8 +668,8 @@
         if (!timeStart)
             timeStart = timestamp;
 
-        let timeElapsed = timestamp - timeStart; //in milliseconds
-        timePassed = parseInt(timeElapsed / 1000); //in seconds - GLOBAL VAR
+        let timeElapsed = timestamp - timeStart;                //in milliseconds
+        timePassed = parseInt(timeElapsed / 1000);              //in seconds - GLOBAL VAR
 
         let timeString = null;
         if (timePassed % 60 < 10)
@@ -636,6 +681,17 @@
 
             document.getElementById('p2').innerText = 'Current Level: ' + level + '\nPoints: ' + currentPoints +
                 '\nElements Left: ' + DOMElements.currentLevelElements.length + '\nTime: ' + timeString + '\nEaten tags:';
+
+            var theFood = levels[level].food;
+            var edible = [];
+
+            theFood.forEach(function (element) {
+                edible.push('<' + element + '>')
+            });
+
+            var pointsLeft = parseInt(levels[level].pointsToLevel - currentPoints);
+
+            document.getElementById('p4').innerText = 'Points to Next Level: ' + pointsLeft + '\nEat the: ' + edible.join(', ');
         }
     }
 
@@ -673,14 +729,22 @@
 
     function changeDirection(event) {
         if (Object.keys(directions).indexOf(String(event.keyCode)) != -1) {
-            snake.framesPerSecond = snake.defaultFramesPerSecond * snake.speedMultiplier;
+            event.stopPropagation();
+            event.preventDefault();
             direction = directions[event.keyCode];
+        }
+        else if (event.keyCode === 32) {     //space bar
+            event.stopPropagation();
+            event.preventDefault();
+            snake.speed = 2;
         }
     }
 
-    function decreaseSpeed() {
-        if (Object.keys(directions).indexOf(String(event.keyCode)) != -1) {
-            snake.framesPerSecond = snake.defaultFramesPerSecond;
+    function decreaseSpeed(event) {
+        if (event.keyCode === 32) {        //space bar
+            event.stopPropagation();
+            event.preventDefault();
+            snake.speed = 4;
         }
     }
 

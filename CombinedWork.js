@@ -1,5 +1,7 @@
 (function SnakeGame() {
     //GLOBAL VARIABLES
+    let snakeHeadColor = 'black';
+    let snakeBodyColor = 'green';
     let snake = null;
     let DOMElements = null;
     let level = 1;
@@ -19,6 +21,7 @@
     const levels = {
         1: {
             food: ['text'],
+            percentOfItems: 50
         },
         2: {
             food: ['b', 'big', 'i', 'small', 'tt', 'a', 'bdo', 'br', 'img', 'map', 'object', 'q', 'span', 'sub', 'sup'],
@@ -102,7 +105,7 @@
             snakeItem.style.height = gameConstants.snakeBodySize + gameConstants.sizeDimension;
             snakeItem.style.position = 'absolute';
             snakeItem.style.borderRadius = 100 + gameConstants.sizeDimension;
-            snakeItem.style.background = 'green';
+            snakeItem.style.background = snakeBodyColor;
             snakeItem.style.zIndex = '999999';
             snakeItem.style.left = 0 + gameConstants.sizeDimension;
             snakeItem.style.top = 0 + gameConstants.sizeDimension;
@@ -116,7 +119,7 @@
         createSnakeHead() {
             let snakePart = this.createSnakeBody();
             snakePart.id = 'snake';
-            snakePart.style.background = 'black';
+            snakePart.style.background = snakeHeadColor;
             snakePart.style.zIndex = '1000000';
             return snakePart;
         }
@@ -253,24 +256,24 @@
                 this._fixedElements(element, depth);
             }
             else { */
-                this._setElementAbsoluteCoords(element);
+            this._setElementAbsoluteCoords(element);
 
-                if ( //check if element is visible on the page
-                    element.absoluteX < bodyWidth &&
-                    element.absoluteRight > 0 &&
-                    element.absoluteY < bodyHeight &&
-                    element.absoluteBottom > 0) {
+            if ( //check if element is visible on the page
+                element.absoluteX < bodyWidth &&
+                element.absoluteRight > 0 &&
+                element.absoluteY < bodyHeight &&
+                element.absoluteBottom > 0) {
 
-                    let elementTag = element.tagName.toLowerCase();             //element tagName
-                    if (this[elementTag])                                       //if this property exists
-                        this[elementTag].push(element);                         //push element into it
-                    else
-                        this[elementTag] = [element];                           //if it does not exist, create array and store element inside 
+                let elementTag = element.tagName.toLowerCase();             //element tagName
+                if (this[elementTag])                                       //if this property exists
+                    this[elementTag].push(element);                         //push element into it
+                else
+                    this[elementTag] = [element];                           //if it does not exist, create array and store element inside 
 
-                    for (let i = 0; i < element.children.length; i++) {         //recursive call for each element
-                        this._getPageElements(element.children[i], depth + 1);
-                    }
+                for (let i = 0; i < element.children.length; i++) {         //recursive call for each element
+                    this._getPageElements(element.children[i], depth + 1);
                 }
+            }
             //}
         }
 
@@ -544,7 +547,7 @@
 
 
     function calcPointsForLevels() {
-        levels[1].pointsToLevel = DOMElements.currentLevelElements.length * pointsPerElement / 2;   //50% of chars
+        levels[1].pointsToLevel = (DOMElements.currentLevelElements.length / 100) * levels[1].percentOfItems * pointsPerElement; //50% of chars
         for (let i = 2; i < Object.keys(levels).length + 1; i += 1) {
             levels[i].pointsToLevel = levels[i - 1].pointsToLevel + 2000;
         }
@@ -599,7 +602,7 @@
         let paragraph = document.createElement('p');
         paragraph.style.maxWidth = 200 + 'px';
         paragraph.style.height = 'fit-content';
-        paragraph.style.zIndex = '2';
+        paragraph.style.zIndex = '100';
         paragraph.style.position = 'relative';
         paragraph.style.color = 'white';
         paragraph.style.fontFamily = 'auto';
@@ -616,7 +619,7 @@
         let paragraph2 = document.createElement('p');
         paragraph2.style.width = 'fit-content';
         paragraph2.style.height = 'fit-content';
-        paragraph2.style.zIndex = '2';
+        paragraph2.style.zIndex = '100';
         paragraph2.style.position = 'relative';
         paragraph2.style.color = 'white';
         paragraph2.style.fontFamily = 'Comic Sans MS';
@@ -631,7 +634,7 @@
         let paragraph3 = document.createElement('p');
         paragraph3.style.width = 'fit-content';
         paragraph3.style.height = 'fit-content';
-        paragraph3.style.zIndex = '2';
+        paragraph3.style.zIndex = '100';
         paragraph3.style.position = 'relative';
         paragraph3.style.color = 'white';
         paragraph3.style.fontFamily = 'auto';
@@ -643,7 +646,7 @@
         paragraph4.style.height = 'fit-content';
         paragraph4.style.width = 'fit-content';
         paragraph4.style.maxWidth = 180 + 'px';
-        paragraph4.style.zIndex = '2';
+        paragraph4.style.zIndex = '100';
         paragraph4.style.position = 'relative';
         paragraph4.style.color = 'white';
         paragraph4.style.fontFamily = 'Times New Roman';
@@ -672,17 +675,17 @@
 
             document.getElementById('p2').innerText = 'Current Level: ' + level + '\nPoints: ' + currentPoints +
                 '\nElements Left: ' + DOMElements.currentLevelElements.length + '\nTime: ' + timeString + '\nEaten tags:';
-            
-                var theFood = levels[level].food;
-                var edible = [];
 
-                theFood.forEach(function(element) {
-                    edible.push('<' + element + '>')
-                });
+            var theFood = levels[level].food;
+            var edible = [];
 
-                var pointsLeft = parseInt(levels[level].pointsToLevel - currentPoints);
+            theFood.forEach(function (element) {
+                edible.push('<' + element + '>')
+            });
 
-                document.getElementById('p4').innerText = 'Points to Next Level: ' + pointsLeft + '\nEat the: ' + edible.join(', ');
+            var pointsLeft = parseInt(levels[level].pointsToLevel - currentPoints);
+
+            document.getElementById('p4').innerText = 'Points to Next Level: ' + pointsLeft + '\nEat the: ' + edible.join(', ');
         }
     }
 
