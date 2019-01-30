@@ -370,22 +370,22 @@
         /* _setFixedElementAbsoluteCoords(elem) {
             let coords = elem.getBoundingClientRect();
 
-            if (elem.offsetTop < window.visualViewport.height / 2) {
-                elem.absoluteY = elem.offsetTop;
-                elem.absoluteBottom = elem.offsetTop + elem.offsetHeight;
+            if (coords.top < window.visualViewport.height / 2) {
+                elem.absoluteY = coords.top;
+                elem.absoluteBottom = coords.bottom;
             }
             else {
-                elem.absoluteY = elem.offsetTop;
-                elem.absoluteBottom = elem.offsetTop + elem.offsetHeight;
+                elem.absoluteY = coords.top + bodyHeight - window.visualViewport.height;
+                elem.absoluteBottom = coords.bottom + bodyHeight - window.visualViewport.height;
             }
 
             if (coords.left < window.visualViewport.width / 2) {
-                elem.absoluteX = elem.offsetLeft;
-                elem.absoluteRight = elem.offsetLeft + elem.offsetWidth;
+                elem.absoluteX = coords.left;
+                elem.absoluteRight = coords.right;
             }
             else {
-                elem.absoluteX = elem.offsetLeft;
-                elem.absoluteRight = elem.offsetLeft + elem.offsetWidth;
+                elem.absoluteX = coords.left + bodyWidth - window.visualViewport.width;
+                elem.absoluteRight = coords.right + bodyWidth - window.visualViewport.width;
             }
         } */
 
