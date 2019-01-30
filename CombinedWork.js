@@ -574,16 +574,25 @@
         let divElement = document.createElement('div');
         divElement.style.width = 'fit-content';
         divElement.style.height = 'fit-content';
+        divElement.style.maxWidth = '200px';
         divElement.style.position = 'fixed';
-        divElement.style.right = '0px';
-        divElement.style.top = '90px';
+        divElement.style.right = '10px';
+        divElement.style.top = '20px';
         divElement.style.zIndex = '100';
         divElement.style.backgroundColor = 'black';
-        divElement.style.padding = '10px';
-        divElement.style.marginRight = '10px';
-        divElement.style.opacity = '0.7';
+        divElement.style.paddingLeft = '10px';
+        divElement.style.paddingRight = '10px';
+        divElement.style.opacity = '0.5';
         divElement.setAttribute('id', 'uidiv');
         document.body.appendChild(divElement);
+
+        let divPar = document.createElement('div');
+        divPar.style.width = 'fit-content';
+        divPar.style.height = 'fit-content';
+        divElement.style.maxWidth = '200px';
+        divPar.style.position = 'static';
+        divPar.setAttribute('id', 'divpar');
+        document.getElementById('uidiv').appendChild(divPar);
     }
     // Game Heading and Gameplay Instructions
     function createUserInstructions() {
@@ -597,7 +606,7 @@
         paragraph.style.fontSize = 'large';
         paragraph.style.fontWeight = 'bold';
         paragraph.style.textDecoration = 'underline';
-        paragraph.style.marginBottom = '5px';
+        paragraph.style.marginTop = '5px';
         paragraph.setAttribute('id', 'p1');
         document.getElementById('uidiv').appendChild(paragraph);
         paragraph.innerText = 'Use the arrow keys to move.' + '\nTo win the game eat all the webpage elements';
@@ -629,6 +638,20 @@
         paragraph3.style.fontSize = 'large';
         paragraph3.setAttribute('id', 'p3');
         document.getElementById('uidiv').appendChild(paragraph3);
+
+        let paragraph4 = document.createElement('p');
+        paragraph4.style.height = 'fit-content';
+        paragraph4.style.width = 'fit-content';
+        paragraph4.style.maxWidth = 180 + 'px';
+        paragraph4.style.zIndex = '2';
+        paragraph4.style.position = 'relative';
+        paragraph4.style.color = 'white';
+        paragraph4.style.fontFamily = 'Times New Roman';
+        paragraph4.style.fontWeight = 'bold';
+        paragraph4.style.fontSize = 'large';
+        paragraph4.style.margin = '1px';
+        paragraph4.setAttribute('id', 'p4');
+        document.getElementById('divpar').appendChild(paragraph4);
     }
 
     function updateGameInfo(timestamp) {
@@ -649,6 +672,17 @@
 
             document.getElementById('p2').innerText = 'Current Level: ' + level + '\nPoints: ' + currentPoints +
                 '\nElements Left: ' + DOMElements.currentLevelElements.length + '\nTime: ' + timeString + '\nEaten tags:';
+            
+                var theFood = levels[level].food;
+                var edible = [];
+
+                theFood.forEach(function(element) {
+                    edible.push('<' + element + '>')
+                });
+
+                var pointsLeft = parseInt(levels[level].pointsToLevel - currentPoints);
+
+                document.getElementById('p4').innerText = 'Points to Next Level: ' + pointsLeft + '\nEat the: ' + edible.join(', ');
         }
     }
 
