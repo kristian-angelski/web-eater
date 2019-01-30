@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Snake Game</title>
+  <script src="popup.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ"
+    crossorigin="anonymous">
+  <style>
+    body {
+          width: 220px;
+          height: 100px;
+        }
+        h1{
+          text-align: center;
+        }
+        #settings{
+         margin-left: 20px; 
+         color: #b3b3b3;
+        }
+        #settings:hover{
+          color:#000000;
+        }
+        .hidden{
+          display: none;
+        }
+        .unhidden {
+          display: block;
+        }
+        input[type=range] {
+          width: 60%
+        }
+      </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row" style="margin-left:0">  
+        <h2>Web Eater</h2>
+        <a href="#" id="settings">
+          <span style="font-size: 1.5em;">
+            <i class="fas fa-cog"></i>
+          </span>
+        </a> 
+    </div>
+
+    <div class="hidden" id="hiddenDiv">
+        <div>
+            <input type="color" id="head" name="head"
+                   value="#e66465">
+            <label for="head">Snake Head</label>
+        </div>
+        
+        <div>
+            <input type="color" id="body" name="body"
+                    value="#f6b73c">
+            <label for="body">Snake Body</label>
+        </div>
+
+        <div>
+            <label for="body">Level 1 text</label><br>
+            10% <input type="range" id="percentText" name="percentText"
+                    value="50" min="20" max="60" step="10"> 60%
+           
+        </div>
+    </div>
+
+    <hr>
+    <div class="row">
+      <div class="col">
+        <button type="button" class="btn btn-info" id="buttonStart">Play</button>
+      </div>
+      <div class="col">
+        <button type="button" class="btn btn-warning" id="reset">Reset</button>
+      </div>
+    </div>
+    <hr>
+  </div>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-8">
+        <a href="https://github.com/kristian-angelski/web-eater" target="blank" class="float-right">
+          <span style="font-size: 2em;">
+            <i class="fab fa-github"></i>
+          </span>
+        </a>
+      </div>
+
+      <!-- <div class="col-sm-">
+        <a href="https://github.com/kristian-angelski/web-eater" target="blank">
+          <span style="font-size: 2em;">
+            <i class="fab fa-github"></i>
+          </span>
+        </a>
+      </div> -->
+    </div>
+  </div>
+
+
+</body>
+
+</html>
