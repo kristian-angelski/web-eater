@@ -24,10 +24,10 @@
             food: ['b', 'big', 'i', 'small', 'tt', 'a', 'bdo', 'br', 'img', 'map', 'object', 'q', 'span', 'sub', 'sup'],
         },
         3: {
-            food: ['abbr', 'acronym', 'cite', 'code', 'dfn', 'em', 'kbd', 'strong', 'samp', 'var', 'button', 'input', 'label', 'select', 'textarea',, 'h4', 'h5', 'h6'],
+            food: ['abbr', 'acronym', 'cite', 'code', 'dfn', 'em', 'kbd', 'strong', 'samp', 'var', 'button', 'input', 'label', 'select', 'textarea', , 'h4', 'h5', 'h6'],
         },
         4: {
-            food: ['p', 'h1', 'h2', 'h3','noscript', 'hr', 'dl'],
+            food: ['p', 'h1', 'h2', 'h3', 'noscript', 'hr', 'dl'],
         },
         5: {
             food: ['ol', 'ul', 'pre', 'address', 'blockquote'],
@@ -88,10 +88,8 @@
         constructor() {
             this.snakeBody = [];
             this.snakeHeadDOM = this.createSnakeHead();
-            this.defaultFramesPerSecond = 10;
-            this.framesPerSecond = this.defaultFramesPerSecond;
-            this.frameCounter = 1;
-            this.speedMultiplier = 1;
+            this.speed = 4;
+            this.frameCounter = 0;
             this.snakeBodyCounter = 10;
 
             this.addBody(this.snakeBodyCounter);
@@ -141,6 +139,7 @@
             this.snakeHeadDOM[direction.item] += direction.sign * speed;
             this.snakeHeadDOM.direction = direction;
 
+            //check if the snake's head is about to exit the page
             if (this.snakeHeadDOM.left < 0) {
                 this.snakeHeadDOM.left = bodyWidth - gameConstants.snakeBodySize;
             } else if (this.snakeHeadDOM.top < 0) {
@@ -154,7 +153,7 @@
 
         addBody(num) {
 
-            for (let i = 0; i < num; i += 1){
+            for (let i = 0; i < num; i += 1) {
                 this.snakeBody.push(this.createSnakeBody());
                 this.snakeBodyCounter++;
             }
@@ -182,16 +181,17 @@
                     elem.absoluteY < this.snakeHeadDOM.top + gameConstants.snakeBodySize &&
                     elem.absoluteBottom > this.snakeHeadDOM.top) {
 
-                        if(DOMElements.canBeEaten(elem)) {
-                            elem.style.opacity = 0; //opacity 0
+                    if (DOMElements.canBeEaten(elem)) {
+                        elem.style.transition = 'opacity 150ms ease-in';
+                        elem.style.opacity = 0; //opacity 0
 
-                            //override the eaten element in the array with the last element and then remove the last element in array
-                            DOMElements.currentLevelElements[i] = DOMElements.currentLevelElements[DOMElements.currentLevelElements.length - 1];
-                            DOMElements.currentLevelElements.pop();
-                            elem.classList.add('eaten');
-                            addPoints(pointsPerElement);
-                            eatenElement(elem);
-                        }
+                        //override the eaten element in the array with the last element and then remove the last element in array
+                        DOMElements.currentLevelElements[i] = DOMElements.currentLevelElements[DOMElements.currentLevelElements.length - 1];
+                        DOMElements.currentLevelElements.pop();
+                        elem.classList.add('eaten');
+                        addPoints(pointsPerElement);
+                        eatenElement(elem);
+                    }
                 }
             }
         }
@@ -205,8 +205,8 @@
         moveSnake(timestamp) {
 
             this.frameCounter += 1;
-            if (!(this.frameCounter % (60 / this.framesPerSecond))) {
-                this.snakeBodyCounter = 0;
+            if (!(this.frameCounter % this.speed)) {
+                this.frameCounter = 0;
 
                 snake.calcNewCoordinates();
                 snake.checkCollision();
@@ -247,9 +247,41 @@
             element.depth = depth;
             element.classList.add('eaten');                                 //set the class eaten for every element
             this._sortByDepth(element, depth);
-            this._setElementAbsoluteCoords(element);
 
-            if (/* element.clientHeight > 0 && element.clientWidth > 0 &&   */    //check if element is visible on the page
+            /* if (element.style.position === 'fixed' || element.style.position === 'sticky') { 
+                this._fixedElements(element, depth);
+            }
+            else { */
+                this._setElementAbsoluteCoords(element);
+
+                if ( //check if element is visible on the page
+                    element.absoluteX < bodyWidth &&
+                    element.absoluteRight > 0 &&
+                    element.absoluteY < bodyHeight &&
+                    element.absoluteBottom > 0) {
+
+                    let elementTag = element.tagName.toLowerCase();             //element tagName
+                    if (this[elementTag])                                       //if this property exists
+                        this[elementTag].push(element);                         //push element into it
+                    else
+                        this[elementTag] = [element];                           //if it does not exist, create array and store element inside 
+
+                    for (let i = 0; i < element.children.length; i++) {         //recursive call for each element
+                        this._getPageElements(element.children[i], depth + 1);
+                    }
+                }
+            //}
+        }
+
+
+      /*   _fixedElements(element, depth) {
+            element.depth = depth;
+            element.classList.add('eaten');
+            this._sortByDepth(element, depth);
+
+            this._setFixedElementAbsoluteCoords(element);
+
+            if ( //check if element is visible on the page
                 element.absoluteX < bodyWidth &&
                 element.absoluteRight > 0 &&
                 element.absoluteY < bodyHeight &&
@@ -262,19 +294,11 @@
                     this[elementTag] = [element];                           //if it does not exist, create array and store element inside 
 
                 for (let i = 0; i < element.children.length; i++) {         //recursive call for each element
-                    this._getPageElements(element.children[i], depth + 1);
+                    this._fixedElements(element.children[i], depth + 1);
                 }
+                this._getPageElements(element.nextElementSibling, depth)
             }
-        }
-
-        canBeEaten(element) {
-            for(let i=0; i<element.children.length; i+=1) {
-                if(!element.children[i].classList.contains('eaten')) {
-                    return false;
-                }
-            }
-            return true;
-        }
+        } */
 
 
         /**
@@ -334,33 +358,33 @@
         }
 
         _setElementAbsoluteCoords(elem) {
-            let coords = Dom.utilities.getAbsolutePageCoordinates(elem);
-            elem.absoluteX = coords.left;
-            elem.absoluteY = coords.top;
-            elem.absoluteRight = coords.width + coords.left;
-            elem.absoluteBottom = coords.height + coords.top;
+            //let coords = Dom.utilities.getAbsolutePageCoordinates(elem);
+            elem.absoluteX = elem.offsetLeft;
+            elem.absoluteY = elem.offsetTop;
+            elem.absoluteRight = elem.offsetLeft + elem.offsetWidth;
+            elem.absoluteBottom = elem.offsetTop + elem.offsetHeight;
         }
 
 
         _setFixedElementAbsoluteCoords(elem) {
             let coords = elem.getBoundingClientRect();
 
-            if (coords.top < window.visualViewport.height/2) {
-                elem.absoluteY = coords.top;
-                elem.absoluteBottom = coords.bottom;
+            if (elem.offsetTop < window.visualViewport.height / 2) {
+                elem.absoluteY = elem.offsetTop;
+                elem.absoluteBottom = elem.offsetTop + elem.offsetHeight;
             }
             else {
-                elem.absoluteY =  pageYOffset + coords.top;
-                elem.absoluteBottom = pageYOffset + coords.bottom;
+                elem.absoluteY = elem.offsetTop;
+                elem.absoluteBottom = elem.offsetTop + elem.offsetHeight;
             }
 
-            if (coords.left < window.visualViewport.width/2) {
-                elem.absoluteX = coords.left;
-                elem.absoluteRight = coords.right;
+            if (coords.left < window.visualViewport.width / 2) {
+                elem.absoluteX = elem.offsetLeft;
+                elem.absoluteRight = elem.offsetLeft + elem.offsetWidth;
             }
             else {
-                elem.absoluteX = pageXOffset + coords.left;
-                elem.absoluteRight= pageXOffset + coords.right
+                elem.absoluteX = elem.offsetLeft;
+                elem.absoluteRight = elem.offsetLeft + elem.offsetWidth;
             }
         }
 
@@ -401,6 +425,20 @@
                 elem.absoluteRight = coords.width + coords.left;
                 elem.absoluteBottom = coords.height + coords.top;
             });
+        }
+
+        /**
+         * Checks to see if every child of the element has the class 'eaten'
+         * Returns true if every class has class 'eaten'
+         * @param {HTMLElement} element 
+         */
+        canBeEaten(element) {
+            for (let i = 0; i < element.children.length; i += 1) {
+                if (!element.children[i].classList.contains('eaten')) {
+                    return false;
+                }
+            }
+            return true;
         }
 
 
@@ -492,11 +530,13 @@
      * used in the function addPoints()
      */
     function nextLevel() {
-        
+
         level++;
         alert(`gz, you are level ${level} now!`);
         snake.addBody(3);
         DOMElements.setLevelElements();
+        bodyWidth = htmlPage.scrollWidth;
+        bodyHeight = htmlPage.scrollHeight;
         if (DOMElements.currentLevelElements.length === 0) //check if there are any elements of this type on the page, if not, go to next level. Otherwise you're stuck on a level you can never eat anything.
             nextLevel();
     }
@@ -645,14 +685,22 @@
 
     function changeDirection(event) {
         if (Object.keys(directions).indexOf(String(event.keyCode)) != -1) {
-            snake.framesPerSecond = snake.defaultFramesPerSecond * snake.speedMultiplier;
+            event.stopPropagation();
+            event.preventDefault();
             direction = directions[event.keyCode];
+        }
+        else if (event.keyCode === 32) {     //space bar
+            event.stopPropagation();
+            event.preventDefault();
+            snake.speed = 2;
         }
     }
 
-    function decreaseSpeed() {
-        if (Object.keys(directions).indexOf(String(event.keyCode)) != -1) {
-            snake.framesPerSecond = snake.defaultFramesPerSecond;
+    function decreaseSpeed(event) {
+        if (event.keyCode === 32) {        //space bar
+            event.stopPropagation();
+            event.preventDefault();
+            snake.speed = 4;
         }
     }
 
@@ -721,7 +769,7 @@
                                 currentEl = parentTag[i].nodeValue.trim();
 
                                 if (currentEl !== '') {
-                                    
+
                                     currElLength = currentEl.length;
 
                                     for (let j = 0; j < currElLength; j += 1) {
