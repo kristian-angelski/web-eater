@@ -137,16 +137,13 @@
 
             let snakeLength = this.snakeBody.length;
             for (let i = snakeLength - 1; i !== 0; i -= 1) {
-                let nextSnakePart = this.snakeBody[i - 1];
-
-                this.snakeBody[i][nextSnakePart.direction.item] = nextSnakePart[nextSnakePart.direction.item];
-                this.snakeBody[i].direction = nextSnakePart.direction;
+                this.snakeBody[i].left = this.snakeBody[i - 1].left;
+                this.snakeBody[i].top = this.snakeBody[i - 1].top;
             }
 
-            this.snakeBody[0][this.snakeHeadDOM.direction.item] = this.snakeHeadDOM[this.snakeHeadDOM.direction.item];
-            this.snakeBody[0].direction = this.snakeHeadDOM.direction;
+            this.snakeBody[0].left = this.snakeHeadDOM.left;
+            this.snakeBody[0].top = this.snakeHeadDOM.top;
             this.snakeHeadDOM[direction.item] += direction.sign * speed;
-            this.snakeHeadDOM.direction = direction;
 
             //check if the snake's head is about to exit the page
             if (this.snakeHeadDOM.left < 0) {
