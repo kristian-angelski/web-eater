@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', function () {
         snakeHead.value = items.snakeHeadColor;
         snakeBody.value = items.snakeBodyColor;
         percentText.value = items.percentOfItems;
-        init();
     });
 
     startButton.addEventListener('click', function () {
