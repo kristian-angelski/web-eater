@@ -584,7 +584,7 @@
         divElement.style.position = 'fixed';
         divElement.style.right = '10px';
         divElement.style.top = '20px';
-        divElement.style.zIndex = '100';
+        divElement.style.zIndex = '1000000';
         divElement.style.backgroundColor = 'black';
         divElement.style.paddingLeft = '10px';
         divElement.style.paddingRight = '10px';
@@ -605,7 +605,7 @@
         let paragraph = document.createElement('p');
         paragraph.style.maxWidth = 200 + 'px';
         paragraph.style.height = 'fit-content';
-        paragraph.style.zIndex = '100';
+        paragraph.style.zIndex = '1000000';
         paragraph.style.position = 'relative';
         paragraph.style.color = 'white';
         paragraph.style.fontFamily = 'auto';
@@ -622,7 +622,7 @@
         let paragraph2 = document.createElement('p');
         paragraph2.style.width = 'fit-content';
         paragraph2.style.height = 'fit-content';
-        paragraph2.style.zIndex = '100';
+        paragraph2.style.zIndex = '1000000';
         paragraph2.style.position = 'relative';
         paragraph2.style.color = 'white';
         paragraph2.style.fontFamily = 'Comic Sans MS';
@@ -637,7 +637,7 @@
         let paragraph3 = document.createElement('p');
         paragraph3.style.width = 'fit-content';
         paragraph3.style.height = 'fit-content';
-        paragraph3.style.zIndex = '100';
+        paragraph3.style.zIndex = '1000000';
         paragraph3.style.position = 'relative';
         paragraph3.style.color = 'white';
         paragraph3.style.fontFamily = 'auto';
@@ -649,7 +649,7 @@
         paragraph4.style.height = 'fit-content';
         paragraph4.style.width = 'fit-content';
         paragraph4.style.maxWidth = 180 + 'px';
-        paragraph4.style.zIndex = '100';
+        paragraph4.style.zIndex = '1000000';
         paragraph4.style.position = 'relative';
         paragraph4.style.color = 'white';
         paragraph4.style.fontFamily = 'Times New Roman';
