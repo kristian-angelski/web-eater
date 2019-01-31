@@ -7,9 +7,15 @@ document.addEventListener('DOMContentLoaded', function () {
     var percentText = document.getElementById('percentText');
 
     chrome.storage.sync.get(['snakeHeadColor', 'snakeBodyColor', 'percentOfItems'], function (items) {
-        snakeHead.value = items.snakeHeadColor;
-        snakeBody.value = items.snakeBodyColor;
-        percentText.value = items.percentOfItems;
+        if (items.snakeHeadColor) {
+            snakeHead.value = items.snakeHeadColor;
+        }
+        if (items.snakeBodyColor) {
+            snakeBody.value = items.snakeBodyColor;
+        }
+        if (items.percentOfItems) {
+            percentText.value = items.percentOfItems;
+        }
     });
 
     startButton.addEventListener('click', function () {
