@@ -443,11 +443,11 @@
 
             for (let i = 0; i < element.children.length; i += 1) {                  //if element has children
                 if (!element.children[i].classList.contains('eaten')) {             //if one of the children DOES NOT have 'eaten'
-                    boolean = false;                                                   //return false
+                    boolean = false;                                                //return false
                 }
-                boolean = this.canBeEaten(element.children[i], boolean);               
+                boolean = this.canBeEaten(element.children[i], boolean);            //set boolean to the returned value
             }
-            return boolean;
+            return boolean;                                                         //return boolean
         }
 
 
