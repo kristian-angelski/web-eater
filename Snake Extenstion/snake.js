@@ -186,7 +186,8 @@
                     elem.absoluteY < this.snakeHeadDOM.top + gameConstants.snakeBodySize &&
                     elem.absoluteBottom > this.snakeHeadDOM.top) {
 
-                    if (DOMElements.canBeEaten(elem)) {
+                    debugger;
+                    if (DOMElements.canBeEaten(elem, true)) {
                         elem.style.transition = 'opacity 150ms ease-in';
                         elem.style.opacity = 0; //opacity 0
 
@@ -435,16 +436,18 @@
 
         /**
          * Checks to see if every child of the element has the class 'eaten'
-         * Returns true if every class has class 'eaten'
+         * Returns false if a child element does not have the class 'eaten'
          * @param {HTMLElement} element 
          */
-        canBeEaten(element) {
-            for (let i = 0; i < element.children.length; i += 1) {
-                if (!element.children[i].classList.contains('eaten')) {
-                    return false;
+        canBeEaten(element, boolean) {
+
+            for (let i = 0; i < element.children.length; i += 1) {                  //if element has children
+                if (!element.children[i].classList.contains('eaten')) {             //if one of the children DOES NOT have 'eaten'
+                    boolean = false;                                                   //return false
                 }
+                boolean = this.canBeEaten(element.children[i], boolean);               
             }
-            return true;
+            return boolean;
         }
 
 
