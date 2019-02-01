@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var snakeHead = document.getElementById('head');
     var snakeBody = document.getElementById('body');
     var percentText = document.getElementById('percentText');
+    var instructions = document.getElementById('infoIcon');
+    var instructionsDiv = document.getElementById('instructions');
 
     chrome.storage.sync.get(['snakeHeadColor', 'snakeBodyColor', 'percentOfItems'], function (items) {
         if (items.snakeHeadColor) {
@@ -38,4 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
     settingsButton.addEventListener('click', function () {
         hiddenSettings.classList.toggle('hidden');
     });
+    instructions.addEventListener('click', function() {
+        instructionsDiv.classList.toggle('hidden');
+    })
 });

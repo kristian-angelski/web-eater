@@ -83,7 +83,6 @@
 
         createDiv();
         createUserElements();
-        createUserInstructions();
         createGameInfo();
         snake.moveSnake(); // call last
     };
@@ -571,7 +570,7 @@
         div.style.top = '0';
         div.style.left = '0';
         div.setAttribute('id', 'Div1');
-        div.style.zIndex = '10000000000000';
+        div.style.zIndex = '100000';
         document.body.appendChild(div);
     }
 
@@ -589,6 +588,9 @@
         divElement.style.paddingLeft = '10px';
         divElement.style.paddingRight = '10px';
         divElement.style.opacity = '0.5';
+        divElement.style.border = 'solid #1c2a90 2px';
+        divElement.style.webkitBoxShadow = '0 8px 17px 2px rgb(0,0,0)';
+        divElement.style.boxShadow = '0 8px 17px 2px rgb(0,0,0)';
         divElement.setAttribute('id', 'uidiv');
         document.body.appendChild(divElement);
 
@@ -599,23 +601,6 @@
         divPar.style.position = 'static';
         divPar.setAttribute('id', 'divpar');
         document.getElementById('uidiv').appendChild(divPar);
-    }
-    // Game Heading and Gameplay Instructions
-    function createUserInstructions() {
-        let paragraph = document.createElement('p');
-        paragraph.style.maxWidth = 200 + 'px';
-        paragraph.style.height = 'fit-content';
-        paragraph.style.zIndex = '1000000';
-        paragraph.style.position = 'relative';
-        paragraph.style.color = 'white';
-        paragraph.style.fontFamily = 'auto';
-        paragraph.style.fontSize = 'large';
-        paragraph.style.fontWeight = 'bold';
-        paragraph.style.textDecoration = 'underline';
-        paragraph.style.marginTop = '5px';
-        paragraph.setAttribute('id', 'p1');
-        document.getElementById('uidiv').appendChild(paragraph);
-        paragraph.innerText = 'Use the arrow keys to move.' + '\nTo win the game eat all the webpage elements';
     }
 
     function createGameInfo() {
