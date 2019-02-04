@@ -186,8 +186,7 @@
                     elem.absoluteY < this.snakeHeadDOM.top + gameConstants.snakeBodySize &&
                     elem.absoluteBottom > this.snakeHeadDOM.top) {
 
-                    debugger;
-                    if (DOMElements.canBeEaten(elem, true)) {
+                    if (DOMElements.canBeEaten(elem)) {
                         elem.style.transition = 'opacity 150ms ease-in';
                         elem.style.opacity = 0; //opacity 0
 
@@ -253,12 +252,6 @@
             element.depth = depth;
             element.classList.add('eaten');                                 //set the class eaten for every element
             this._sortByDepth(element, depth);
-
-            /* if (element.style.position === 'fixed' || element.style.position === 'sticky') { 
-                debugger;
-                this._fixedElements(element, depth);
-            }
-            else { */
             this._setElementAbsoluteCoords(element);
 
             if ( //check if element is visible on the page
@@ -277,7 +270,6 @@
                     this._getPageElements(element.children[i], depth + 1);
                 }
             }
-            //}
         }
 
 
@@ -440,6 +432,8 @@
          * @param {HTMLElement} element 
          */
         canBeEaten(element, boolean) {
+            if(boolean === undefined) 
+                boolean = true;
 
             for (let i = 0; i < element.children.length; i += 1) {                  //if element has children
                 if (!element.children[i].classList.contains('eaten')) {             //if one of the children DOES NOT have 'eaten'
